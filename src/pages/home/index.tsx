@@ -1,25 +1,22 @@
-import React, { useState } from 'preact/compat';
+import React, { useEffect, useState } from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { columns, Payment } from './columns';
+import { columns } from './columns';
 import { DataList } from './data-list';
+import { IDataTableItem } from '@/models/data-table.model';
+import { DataTableService } from '@/services/data-table.service';
+
+const MOCK_DATA: IDataTableItem[] = [];
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [tableData, setTableData] = useState<Payment[]>([
-    {
-      id: '728ed52f',
-      amount: 100,
-      status: 'pending',
-      email: 'm@example.com',
-    },
-    {
-      id: '489e1d42',
-      amount: 125,
-      status: 'processing',
-      email: 'example@gmail.com',
-    },
-  ]);
+  const [tableData, setTableData] = useState<IDataTableItem[]>([]);
+
+  useEffect(() => {
+    DataTableService.list().then((data) => {
+      setTableData(data);
+    });
+  }, []);
 
   const handleSearch = () => {
     // Implement search logic here

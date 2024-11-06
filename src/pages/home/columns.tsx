@@ -1,25 +1,86 @@
-import { ColumnDef } from "@tanstack/react-table"
+import { Badge } from '@/components/ui/badge';
+import { IDataTableItem } from '@/models/data-table.model';
+import { ColumnDef } from '@tanstack/react-table';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<IDataTableItem>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: 'name',
+    header: 'Name',
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: 'ipAddress',
+    header: 'IP',
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: 'port',
+    header: 'Port',
   },
-]
+  {
+    accessorKey: 'mapName',
+    header: 'Map',
+  },
+  {
+    accessorKey: 'bots',
+    header: 'Bots',
+  },
+  {
+    accessorKey: 'country',
+    header: 'Country',
+  },
+  {
+    accessorKey: 'currentPlayers',
+    header: 'Players',
+    cell: ({ row }) => {
+      return `${row.original.currentPlayers}/${row.original.maxPlayers}`;
+    },
+  },
+  {
+    accessorKey: 'dedicated',
+    header: 'Dedicated',
+    cell: ({ row }) => {
+      return row.original.dedicated ? 'Yes' : 'No';
+    },
+  },
+  {
+    accessorKey: 'mod',
+    header: 'Mod',
+    cell: ({ row }) => {
+      return row.original.mod === 1 ? 'Yes' : 'No';
+    },
+  },
+  {
+    accessorKey: 'playerList',
+    header: 'Players',
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-wrap">
+          {row.original.playerList.map((player) => (
+            <span key={player} className="mr-2 mb-2">
+              <Badge>{player}</Badge>
+            </span>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'comment',
+    header: 'Comment',
+  },
+  {
+    accessorKey: 'url',
+    header: 'URL',
+  },
+  {
+    accessorKey: 'mode',
+    header: 'Mode',
+  },
+  {
+    accessorKey: 'realm',
+    header: 'Realm',
+  },
+  {
+    accessorKey: 'version',
+    header: 'Version',
+  },
+];
