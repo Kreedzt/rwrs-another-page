@@ -1,0 +1,135 @@
+import {
+  IDisplayServerItem,
+  OnlineStats,
+  IRes,
+} from '@/models/data-table.model';
+import { XMLParser } from 'fast-xml-parser';
+
+const parseElementText = (
+  element: Element,
+  selector: string,
+): string | null | undefined => {
+  return element.querySelector(selector)?.textContent;
+};
+
+const fixPlayerList = (raw: string | undefined | string[]): string[] => {
+  if (Array.isArray(raw)) {
+    return raw;
+  }
+
+  if (typeof raw === 'string') {
+    return [raw];
+  }
+
+  return [];
+};
+
+export const getMapKey = (s: IDisplayServerItem) => {
+  return `${s.ipAddress}:${s.port}`;
+};
+
+export const parseServerListFromString = (
+  resString: string,
+): IDisplayServerItem[] => {
+  const parser = new XMLParser();
+  const res = parser.parse(resString) as IRes;
+
+  const serverList: IDisplayServerItem[] = res.result.server.map((server) => {
+    const block: IDisplayServerItem = {
+      name: server.name,
+      ipAddress: server.address,
+      port: server.port,
+      mapId: server.map_id,
+      mapName: server.map_name,
+      bots: server.bots,
+      country: server.country,
+      currentPlayers: server.current_players,
+      timeStamp: server.timeStamp,
+      version: server.version,
+      dedicated: server.dedicated === 1,
+      mod: server.mod,
+      playerList: fixPlayerList(server.player),
+      comment: server.comment,
+      url: server.url,
+      maxPlayers: server.max_players,
+      mode: server.mode,
+      realm: server.realm,
+    };
+
+    return block;
+  });
+
+  return serverList;
+};
+
+// export const getUnlimitedServerList = async () => {
+//   let start = 0;
+//   const size = 100;
+
+//   const totalServerList: IDisplayServerItem[] = [];
+
+//   let parsedServerList: IDisplayServerItem[] = [];
+
+//   do {
+//     const newServerList = await getServerList({
+//       start,
+//       size,
+//       names: 1,
+//     });
+
+//     parsedServerList = parseServerListFromString(newServerList);
+
+//     totalServerList.push(...parsedServerList);
+//     start += size;
+//   } while (parsedServerList.length === size);
+
+//   return totalServerList;
+// };
+
+export const getCurrentTimeStr = () => {
+  const date = new Date();
+
+  const yearStr = date.getFullYear();
+  const monthStr = (date.getMonth() + 1).toString().padStart(2, '0');
+  const dateStr = date.getDate().toString().padStart(2, '0');
+  const hourStr = date.getHours().toString().padStart(2, '0');
+  const minuteStr = date.getMinutes().toString().padStart(2, '0');
+  const secondStr = date.getSeconds().toString().padStart(2, '0');
+
+  const fullStr =
+    yearStr +
+    '-' +
+    monthStr +
+    '-' +
+    dateStr +
+    ' ' +
+    hourStr +
+    ':' +
+    minuteStr +
+    ':' +
+    secondStr;
+
+  return fullStr;
+};
+
+export const generateEmptyOnlineStatItem = (): OnlineStats => {
+  const temp: OnlineStats = {
+    onlineServerCount: 0,
+    allServerCount: 0,
+    onlinePlayerCount: 0,
+    playerCapacityCount: 0,
+  };
+
+  return temp;
+};
+
+// export const isServerMatch = (env: ENV, server: IDisplayServerItem): boolean => {
+//   if (!!env.SERVER_MATCH_REALM) {
+//     return (
+//       new RegExp(env.SERVER_MATCH_REGEX).test(server.name) &&
+//       server.realm === env.SERVER_MATCH_REALM
+//     );
+//   }
+
+//   return new RegExp(env.SERVER_MATCH_REGEX).test(server.name);
+// };

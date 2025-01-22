@@ -3,14 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { columns } from './columns';
 import { DataList } from './data-list';
-import { IDataTableItem } from '@/models/data-table.model';
 import { DataTableService } from '@/services/data-table.service';
-
-const MOCK_DATA: IDataTableItem[] = [];
+import { IDisplayServerItem } from '@/models/data-table.model';
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [tableData, setTableData] = useState<IDataTableItem[]>([]);
+  const [tableData, setTableData] = useState<IDisplayServerItem[]>([]);
 
   useEffect(() => {
     DataTableService.list().then((data) => {
