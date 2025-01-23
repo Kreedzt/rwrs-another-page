@@ -54,7 +54,8 @@ const Home: React.FC = () => {
     autoResetPageIndex: true,
   });
 
-  const onSearch = useCallback((value: string) => {
+  const onSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
     console.log('Searching for:', value);
     setSearchQuery(value);
     table.setGlobalFilter(value);
@@ -82,7 +83,7 @@ const Home: React.FC = () => {
         <Input
           type="text"
           value={searchQuery}
-          onInput={(e) => onSearch(e.currentTarget.value)}
+          onInput={onSearch}
           placeholder="Enter search query"
         ></Input>
         <Button onClick={onReset}>Reset</Button>
