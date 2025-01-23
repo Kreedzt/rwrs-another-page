@@ -39,15 +39,17 @@ PaginationItem.displayName = 'PaginationItem';
 
 type PaginationLinkProps = {
   isActive?: boolean;
-} & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'a'>;
+  disabled?: boolean;
+  size?: 'default' | 'icon' | 'sm' | 'lg' | null;
+} & React.ComponentProps<'a'>;
 
 const PaginationLink = ({
   className,
   isActive,
   size = 'icon',
+  disabled,
   ...props
-}: PaginationLinkProps) => (
+}: PaginationLinkProps & { disabled?: boolean }) => (
   <a
     aria-current={isActive ? 'page' : undefined}
     className={cn(
@@ -57,6 +59,7 @@ const PaginationLink = ({
       }),
       className,
       'text-inherit cursor-pointer',
+      disabled && 'pointer-events-none opacity-50'
     )}
     {...props}
   />
