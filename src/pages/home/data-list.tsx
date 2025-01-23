@@ -1,5 +1,5 @@
 'use client';
-
+import { useCallback, memo } from 'preact/compat';
 import {
   ColumnDef,
   flexRender,
@@ -23,14 +23,119 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   table: IReactTableInst<TData>;
+  isLoading: boolean;
 }
+
+const TablePagination = memo(
+  ({
+    table,
+    pageIndex,
+    isLoading,
+  }: {
+    table: IReactTableInst<any>;
+    pageIndex: number;
+    isLoading: boolean;
+  }) => {
+    const totalPages = table.getPageCount();
+    const SIBLING_COUNT = 1;
+    const DOTS = 'dots';
+
+    const generatePagination = useCallback(() => {
+      const pages = [];
+      const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 0);
+      const rightSiblingIndex = Math.min(
+        pageIndex + SIBLING_COUNT,
+        totalPages - 1,
+      );
+
+      const shouldShowLeftDots = leftSiblingIndex > 1;
+      const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+
+      if (!shouldShowLeftDots && !shouldShowRightDots) {
+        return Array.from({ length: totalPages }, (_, i) => i);
+      }
+
+      if (!shouldShowLeftDots && shouldShowRightDots) {
+        const leftItemCount = 3 + 2 * SIBLING_COUNT;
+        return [...Array(leftItemCount).keys(), DOTS, totalPages - 1];
+      }
+
+      if (shouldShowLeftDots && !shouldShowRightDots) {
+        const rightItemCount = 3 + 2 * SIBLING_COUNT;
+        return [
+          0,
+          DOTS,
+          ...Array(rightItemCount)
+            .fill(0)
+            .map((_, idx) => totalPages - rightItemCount + idx),
+        ];
+      }
+
+      return [
+        0,
+        DOTS,
+        ...Array(rightSiblingIndex - leftSiblingIndex + 1)
+          .fill(0)
+          .map((_, idx) => leftSiblingIndex + idx),
+        DOTS,
+        totalPages - 1,
+      ];
+    }, [pageIndex, totalPages]);
+
+    const onPageChange = useCallback(
+      (index: number) => {
+        table.setPageIndex(index);
+      },
+      [table],
+    );
+
+    return (
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              disabled={!table.getCanPreviousPage()}
+              onClick={() => table.previousPage()}
+            />
+          </PaginationItem>
+
+          {generatePagination().map((pageNum, i) =>
+            pageNum === DOTS ? (
+              <PaginationItem key={`dots-${i}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={pageNum}>
+                <PaginationLink
+                  isActive={pageIndex === pageNum}
+                  onClick={() => onPageChange(+pageNum)}
+                >
+                  {+pageNum + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              disabled={!table.getCanNextPage()}
+              onClick={() => table.nextPage()}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  },
+);
 
 export function DataList<TData, TValue>({
   table,
   columns,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const pageIndex = table.getState().pagination.pageIndex;
   return (
@@ -78,41 +183,11 @@ export function DataList<TData, TValue>({
         </TableBody>
       </Table>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                disabled={!table.getCanPreviousPage()}
-                href="#"
-                onClick={() => {
-                  table.previousPage();
-                }}
-              />
-            </PaginationItem>
-            {new Array(table.getPageCount()).fill(null).map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  href="#"
-                  isActive={pageIndex === i}
-                  onClick={() => {
-                    table.setPageIndex(i);
-                  }}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                disabled={!table.getCanNextPage()}
-                href="#"
-                onClick={() => {
-                  table.nextPage();
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <TablePagination
+          table={table}
+          pageIndex={pageIndex}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

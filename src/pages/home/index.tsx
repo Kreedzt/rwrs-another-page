@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'preact/compat';
+import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { columns } from './columns';
@@ -16,13 +17,12 @@ import {
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [tableData, setTableData] = useState<IDisplayServerItem[]>([]);
-
-  useEffect(() => {
-    DataTableService.listAll().then((data) => {
-      setTableData(data);
-    });
-  }, []);
+  const {
+    data: tableData = [],
+    error,
+    isLoading,
+    mutate,
+  } = useSWR('/api/data-table', DataTableService.listAll);
 
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, columnId, filterValue) => {
@@ -68,13 +68,11 @@ const Home: React.FC = () => {
 
   const onRefresh = useCallback(() => {
     console.log('Refreshing data...');
-    DataTableService.listAll().then((data) => {
-      console.log('Refreshed data:', data);
-      setTableData(data);
-      setSearchQuery('');
-      table.setGlobalFilter(null);
-    });
-  }, []);
+
+    mutate();
+    setSearchQuery('');
+    table.setGlobalFilter(null);
+  }, [mutate]);
 
   return (
     <div class="container">
@@ -85,9 +83,12 @@ const Home: React.FC = () => {
           value={searchQuery}
           onInput={onSearch}
           placeholder="Enter search query"
+          disabled={isLoading}
         ></Input>
-        <Button onClick={onReset}>Reset</Button>
-        <Button className="ml-2" onClick={onRefresh}>
+        <Button disabled={isLoading} onClick={onReset}>
+          Reset
+        </Button>
+        <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
           Refresh
         </Button>
       </div>
@@ -104,7 +105,7 @@ const Home: React.FC = () => {
         </p>
       </div>
       <div class="table-container">
-        <DataList table={table} columns={columns} />
+        <DataList isLoading={isLoading} table={table} columns={columns} />
       </div>
     </div>
   );
