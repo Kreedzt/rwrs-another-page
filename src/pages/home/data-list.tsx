@@ -3,9 +3,7 @@
 import {
   ColumnDef,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
+  Table as IReactTableInst,
 } from '@tanstack/react-table';
 
 import {
@@ -20,21 +18,13 @@ import { Button } from '@/components/ui/button';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  table: IReactTableInst<TData>;
 }
 
 export function DataList<TData, TValue>({
+  table,
   columns,
-  data,
 }: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    autoResetPageIndex: true,
-  });
-
   return (
     <div className="rounded-md border">
       <Table>

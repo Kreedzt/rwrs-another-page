@@ -1,8 +1,8 @@
 import { Badge } from '@/components/ui/badge';
-import { IDataTableItem } from '@/models/data-table.model';
+import { IDisplayServerItem } from '@/models/data-table.model';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<IDataTableItem>[] = [
+export const columns: ColumnDef<IDisplayServerItem>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
