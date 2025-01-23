@@ -62,30 +62,6 @@ export const parseServerListFromString = (
   return serverList;
 };
 
-// export const getUnlimitedServerList = async () => {
-//   let start = 0;
-//   const size = 100;
-
-//   const totalServerList: IDisplayServerItem[] = [];
-
-//   let parsedServerList: IDisplayServerItem[] = [];
-
-//   do {
-//     const newServerList = await getServerList({
-//       start,
-//       size,
-//       names: 1,
-//     });
-
-//     parsedServerList = parseServerListFromString(newServerList);
-
-//     totalServerList.push(...parsedServerList);
-//     start += size;
-//   } while (parsedServerList.length === size);
-
-//   return totalServerList;
-// };
-
 export const getCurrentTimeStr = () => {
   const date = new Date();
 

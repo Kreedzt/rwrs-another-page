@@ -1,8 +1,11 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL || '';
+
+type ResponseType = 'json' | 'text';
 
 export async function request<T>(
   url: string,
   options: RequestInit = {},
+  responseType: ResponseType = 'json',
   timeout: number = 5000,
 ): Promise<T> {
   const controller = new AbortController();
@@ -12,9 +15,15 @@ export async function request<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response: T = await fetch(BASE_URL + url, fetchOptions).then((res) =>
-      res.json(),
-    );
+    const res = await fetch(BASE_URL + url, fetchOptions);
+    let response: T;
+
+    if (responseType === 'json') {
+      response = await res.json();
+    } else {
+      response = (await res.text()) as T;
+    }
+
     return response;
   } catch (error: any) {
     if (error.name === 'AbortError') {

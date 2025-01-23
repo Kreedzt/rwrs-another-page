@@ -11,7 +11,7 @@ const Home: React.FC = () => {
   const [tableData, setTableData] = useState<IDisplayServerItem[]>([]);
 
   useEffect(() => {
-    DataTableService.list().then((data) => {
+    DataTableService.listAll().then((data) => {
       setTableData(data);
     });
   }, []);
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
           type="text"
           value={searchQuery}
           onInput={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Enter search query"
+          placeholder={`Enter search query`}
         ></Input>
         <Button onClick={handleSearch}>Search</Button>
       </div>
