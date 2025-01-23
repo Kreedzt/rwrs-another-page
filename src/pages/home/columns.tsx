@@ -29,7 +29,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
   },
   {
     accessorKey: 'currentPlayers',
-    header: 'Players',
+    header: 'Capacity',
     cell: ({ row }) => {
       return `${row.original.currentPlayers}/${row.original.maxPlayers}`;
     },

@@ -45,45 +45,37 @@ const TablePagination = memo(
     const DOTS = 'dots';
 
     const generatePagination = useCallback(() => {
-      const pages = [];
-      const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 0);
+      const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 1);
       const rightSiblingIndex = Math.min(
         pageIndex + SIBLING_COUNT,
-        totalPages - 1,
+        totalPages - 2,
       );
 
-      const shouldShowLeftDots = leftSiblingIndex > 1;
-      const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+      const shouldShowLeftDots = leftSiblingIndex > 2;
+      const shouldShowRightDots = rightSiblingIndex < totalPages - 3;
 
       if (!shouldShowLeftDots && !shouldShowRightDots) {
         return Array.from({ length: totalPages }, (_, i) => i);
       }
 
       if (!shouldShowLeftDots && shouldShowRightDots) {
-        const leftItemCount = 3 + 2 * SIBLING_COUNT;
-        return [...Array(leftItemCount).keys(), DOTS, totalPages - 1];
+        const leftRange = Array.from({ length: 3 }, (_, i) => i);
+        return [...leftRange, DOTS, totalPages - 1];
       }
 
       if (shouldShowLeftDots && !shouldShowRightDots) {
-        const rightItemCount = 3 + 2 * SIBLING_COUNT;
-        return [
-          0,
-          DOTS,
-          ...Array(rightItemCount)
-            .fill(0)
-            .map((_, idx) => totalPages - rightItemCount + idx),
-        ];
+        const rightRange = Array.from(
+          { length: 3 },
+          (_, i) => totalPages - 3 + i,
+        );
+        return [0, DOTS, ...rightRange];
       }
 
-      return [
-        0,
-        DOTS,
-        ...Array(rightSiblingIndex - leftSiblingIndex + 1)
-          .fill(0)
-          .map((_, idx) => leftSiblingIndex + idx),
-        DOTS,
-        totalPages - 1,
-      ];
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i,
+      );
+      return [0, DOTS, ...middleRange, DOTS, totalPages - 1];
     }, [pageIndex, totalPages]);
 
     const onPageChange = useCallback(
@@ -103,13 +95,13 @@ const TablePagination = memo(
             />
           </PaginationItem>
 
-          {generatePagination().map((pageNum, i) =>
+          {generatePagination().map((pageNum, index) =>
             pageNum === DOTS ? (
-              <PaginationItem key={`dots-${i}`}>
+              <PaginationItem key={`pagination-dots-${index}`}>
                 <PaginationEllipsis />
               </PaginationItem>
             ) : (
-              <PaginationItem key={pageNum}>
+              <PaginationItem key={`pagination-${pageIndex}-${pageNum}`}>
                 <PaginationLink
                   isActive={pageIndex === pageNum}
                   onClick={() => onPageChange(+pageNum)}
