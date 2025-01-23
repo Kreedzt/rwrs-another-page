@@ -56,6 +56,7 @@ const PaginationLink = ({
         size,
       }),
       className,
+      'text-inherit cursor-pointer',
     )}
     {...props}
   />
