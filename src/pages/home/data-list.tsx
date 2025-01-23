@@ -14,8 +14,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   table: IReactTableInst<TData>;
@@ -25,6 +32,7 @@ export function DataList<TData, TValue>({
   table,
   columns,
 }: DataTableProps<TData, TValue>) {
+  const pageIndex = table.getState().pagination.pageIndex;
   return (
     <div className="rounded-md border">
       <Table>
@@ -70,22 +78,41 @@ export function DataList<TData, TValue>({
         </TableBody>
       </Table>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                disabled={!table.getCanPreviousPage()}
+                href="#"
+                onClick={() => {
+                  table.previousPage();
+                }}
+              />
+            </PaginationItem>
+            {new Array(table.getPageCount()).fill(null).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  href="#"
+                  isActive={pageIndex === i}
+                  onClick={() => {
+                    table.setPageIndex(i);
+                  }}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                disabled={!table.getCanNextPage()}
+                href="#"
+                onClick={() => {
+                  table.nextPage();
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
