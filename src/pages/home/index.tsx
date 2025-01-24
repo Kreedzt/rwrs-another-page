@@ -24,6 +24,7 @@ import {
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import { SearchInput } from '@/components/custom/search-input';
+import { useToast } from '@/hooks/use-toast';
 
 const COLUMNS_LIST = columns.map((c) => {
   return {
@@ -55,12 +56,29 @@ const Home: React.FC = () => {
   const [columnVisibility, setColumnVisibility] = useState(
     INITIAL_COLUMNS_VISIBILITY,
   );
+  const { toast } = useToast();
+
   const {
     data: tableData = [],
     error,
     isLoading,
     mutate,
-  } = useSWR('/api/data-table', DataTableService.listAll);
+  } = useSWR('/api/data-table', DataTableService.listAll, {
+    onSuccess: () => {
+      const now = new Date().toLocaleTimeString();
+
+      toast({
+        title: 'Refresh server list success',
+        description: `Data fetched successfully on ${now}`,
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'Refresh server list failed',
+        description: err.message,
+      });
+    },
+  });
 
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, columnId, filterValue) => {
