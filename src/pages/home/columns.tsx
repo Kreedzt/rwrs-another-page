@@ -4,30 +4,37 @@ import { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<IDisplayServerItem>[] = [
   {
+    id: 'name',
     accessorKey: 'name',
     header: 'Name',
   },
   {
+    id: 'ip_address',
     accessorKey: 'ipAddress',
     header: 'IP',
   },
   {
+    id: 'port',
     accessorKey: 'port',
     header: 'Port',
   },
   {
+    id: 'map_name',
     accessorKey: 'mapName',
     header: 'Map',
   },
   {
+    id: 'bots',
     accessorKey: 'bots',
     header: 'Bots',
   },
   {
+    id: 'country',
     accessorKey: 'country',
     header: 'Country',
   },
   {
+    id: 'current_players',
     accessorKey: 'currentPlayers',
     header: 'Capacity',
     cell: ({ row }) => {
@@ -35,6 +42,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     },
   },
   {
+    id: 'dedicated',
     accessorKey: 'dedicated',
     header: 'Dedicated',
     cell: ({ row }) => {
@@ -42,6 +50,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     },
   },
   {
+    id: 'mod',
     accessorKey: 'mod',
     header: 'Mod',
     cell: ({ row }) => {
@@ -49,6 +58,12 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     },
   },
   {
+    id: 'mode',
+    accessorKey: 'mode',
+    header: 'Mode',
+  },
+  {
+    id: 'player_list',
     accessorKey: 'playerList',
     header: 'Players',
     cell: ({ row }) => {
@@ -64,22 +79,22 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     },
   },
   {
+    id: 'comment',
     accessorKey: 'comment',
     header: 'Comment',
   },
   {
+    id: 'url',
     accessorKey: 'url',
     header: 'URL',
   },
   {
-    accessorKey: 'mode',
-    header: 'Mode',
-  },
-  {
+    id: 'realm',
     accessorKey: 'realm',
     header: 'Realm',
   },
   {
+    id: 'version',
     accessorKey: 'version',
     header: 'Version',
   },

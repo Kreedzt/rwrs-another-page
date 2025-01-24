@@ -47,6 +47,8 @@ export const DataTableService: IDataTableService = {
       start += size;
     } while (parsedServerList.length === size);
 
+    console.info('Total servers:', totalServerList);
+
     return totalServerList;
   },
 };
