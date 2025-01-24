@@ -1,11 +1,9 @@
 'use client';
-
+import { useCallback, memo } from 'preact/compat';
 import {
   ColumnDef,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
+  Table as IReactTableInst,
 } from '@tanstack/react-table';
 
 import {
@@ -16,25 +14,122 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  table: IReactTableInst<TData>;
+  isLoading: boolean;
 }
 
-export function DataList<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    autoResetPageIndex: true,
-  });
+const TablePagination = memo(
+  ({
+    table,
+    pageIndex,
+    isLoading,
+  }: {
+    table: IReactTableInst<any>;
+    pageIndex: number;
+    isLoading: boolean;
+  }) => {
+    const totalPages = table.getPageCount();
+    const SIBLING_COUNT = 1;
+    const DOTS = 'dots';
 
+    const generatePagination = useCallback(() => {
+      const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 1);
+      const rightSiblingIndex = Math.min(
+        pageIndex + SIBLING_COUNT,
+        totalPages - 2,
+      );
+
+      const shouldShowLeftDots = leftSiblingIndex > 2;
+      const shouldShowRightDots = rightSiblingIndex < totalPages - 3;
+
+      if (!shouldShowLeftDots && !shouldShowRightDots) {
+        return Array.from({ length: totalPages }, (_, i) => i);
+      }
+
+      if (!shouldShowLeftDots && shouldShowRightDots) {
+        const leftRange = Array.from({ length: 3 }, (_, i) => i);
+        return [...leftRange, DOTS, totalPages - 1];
+      }
+
+      if (shouldShowLeftDots && !shouldShowRightDots) {
+        const rightRange = Array.from(
+          { length: 3 },
+          (_, i) => totalPages - 3 + i,
+        );
+        return [0, DOTS, ...rightRange];
+      }
+
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i,
+      );
+      return [0, DOTS, ...middleRange, DOTS, totalPages - 1];
+    }, [pageIndex, totalPages]);
+
+    const onPageChange = useCallback(
+      (index: number) => {
+        table.setPageIndex(index);
+      },
+      [table],
+    );
+
+    return (
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              disabled={!table.getCanPreviousPage()}
+              onClick={() => table.previousPage()}
+            />
+          </PaginationItem>
+
+          {generatePagination().map((pageNum, index) =>
+            pageNum === DOTS ? (
+              <PaginationItem key={`pagination-dots-${index}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={`pagination-${pageIndex}-${pageNum}`}>
+                <PaginationLink
+                  isActive={pageIndex === pageNum}
+                  onClick={() => onPageChange(+pageNum)}
+                >
+                  {+pageNum + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              disabled={!table.getCanNextPage()}
+              onClick={() => table.nextPage()}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  },
+);
+
+export function DataList<TData, TValue>({
+  table,
+  columns,
+  isLoading,
+}: DataTableProps<TData, TValue>) {
+  const pageIndex = table.getState().pagination.pageIndex;
   return (
     <div className="rounded-md border">
       <Table>
@@ -80,22 +175,11 @@ export function DataList<TData, TValue>({
         </TableBody>
       </Table>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+        <TablePagination
+          table={table}
+          pageIndex={pageIndex}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

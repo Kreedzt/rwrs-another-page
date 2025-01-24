@@ -1,4 +1,4 @@
-import { forwardRef, ButtonHTMLAttributes } from 'preact/compat';
+import * as React from 'preact/compat';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -35,12 +35,12 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'size'>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
