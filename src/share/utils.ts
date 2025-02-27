@@ -5,13 +5,6 @@ import {
 } from '@/models/data-table.model';
 import { XMLParser } from 'fast-xml-parser';
 
-const parseElementText = (
-  element: Element,
-  selector: string,
-): string | null | undefined => {
-  return element.querySelector(selector)?.textContent;
-};
-
 const fixPlayerList = (raw: string | undefined | string[]): string[] => {
   if (Array.isArray(raw)) {
     return raw;

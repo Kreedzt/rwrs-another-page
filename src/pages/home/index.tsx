@@ -6,7 +6,6 @@ import { DataList } from './data-list';
 import { DataTableService } from '@/services/data-table.service';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import {
-  ColumnDef,
   FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
@@ -17,7 +16,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -60,7 +58,6 @@ const Home: React.FC = () => {
 
   const {
     data: tableData = [],
-    error,
     isLoading,
     mutate,
   } = useSWR('/api/data-table', DataTableService.listAll, {
@@ -83,9 +80,14 @@ const Home: React.FC = () => {
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, columnId, filterValue) => {
       const rowValue = row.getValue(columnId);
+      console.log('onFuzzyFilter: columnId:', columnId);
+      if (columnId === 'player_list') {
+        console.log('rowValue is array', rowValue, row);
+      }
       if (typeof rowValue === 'string') {
         return rowValue.toLowerCase().includes(filterValue.toLowerCase());
       } else if (Array.isArray(rowValue)) {
+        console.log('rowValue is array', rowValue);
         return rowValue.some((value) =>
           value.toLowerCase().includes(filterValue.toLowerCase()),
         );
@@ -107,7 +109,7 @@ const Home: React.FC = () => {
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: 'fuzzy',
+    globalFilterFn: onFuzzyFilter,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     autoResetPageIndex: true,
@@ -151,58 +153,66 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div class="container">
-      <h1>RWRS Another Page</h1>
-      <div class="w-full flex">
-        <SearchInput
-          rootClassName="flex-1"
-          type="text"
-          value={searchQuery}
-          onInput={onSearch}
-          placeholder="Search name, ip, port, map, players, etc..."
-          disabled={isLoading}
-        ></SearchInput>
-        <Button className="ml-2" disabled={isLoading} onClick={onReset}>
-          Reset
-        </Button>
-        <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
-          Refresh
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="ml-2" variant="outline">
-              Columns
+    <div class="container min-h-screen">
+      <div class="flex flex-col w-full">
+        {/* 头部固定区域 */}
+        <div class="flex flex-col space-y-2 h-[120px] py-2">
+          <h1 class="text-xl font-bold">RWRS Another Page</h1>
+          <div class="w-full flex items-center">
+            <SearchInput
+              rootClassName="flex-1"
+              type="text"
+              value={searchQuery}
+              onInput={onSearch}
+              placeholder="Search name, ip, port, map, players, etc..."
+              disabled={isLoading}
+            ></SearchInput>
+            <Button className="ml-2" disabled={isLoading} onClick={onReset}>
+              Reset
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Toggle visible columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {COLUMNS_LIST.map((c) => (
-              <DropdownMenuCheckboxItem
-                key={c.id}
-                checked={columnVisibility[c.id as string]}
-                onClick={() => onColumnToggle(c.id as string)}
-              >
-                {c.title}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
+              Refresh
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="ml-2" variant="outline">
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Toggle visible columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {COLUMNS_LIST.map((c) => (
+                  <DropdownMenuCheckboxItem
+                    key={c.id}
+                    checked={columnVisibility[c.id as string]}
+                    onClick={() => onColumnToggle(c.id as string)}
+                  >
+                    {c.title}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <div class="flex items-center min-h-[32px]">
+          <p className="flex items-center gap-2">
+            <span>Total:</span>
+            <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+              {tableData.length}
+            </code>
+            <span>Filtered:</span>
+            <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+              {table.getFilteredRowModel().rows.length}
+            </code>
+          </p>
+        </div>
       </div>
-      <div class="mb-2">
-        <p className="leading-7 [&:not(:first-child)]:mt-6">
-          Total :
-          <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-            {tableData.length}
-          </code>
-          Filtered :
-          <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-            {table.getRowModel().rows?.length}
-          </code>
-        </p>
-      </div>
-      <div class="table-container">
-        <DataList isLoading={isLoading} table={table} columns={columns} />
+      {/* 表格区域 */}
+      <div class="flex-1 overflow-auto w-full">
+        <div class="min-w-[1200px]">
+          <DataList isLoading={isLoading} table={table} columns={columns} />
+        </div>
       </div>
     </div>
   );

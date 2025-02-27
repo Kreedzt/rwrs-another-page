@@ -34,7 +34,6 @@ const TablePagination = memo(
   ({
     table,
     pageIndex,
-    isLoading,
   }: {
     table: IReactTableInst<any>;
     pageIndex: number;

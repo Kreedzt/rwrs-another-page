@@ -7,11 +7,11 @@ export default defineConfig({
   plugins: [preact()],
   server: {
     proxy: {
+      // use rwrs-server
       '/api': {
-        target: 'http://rwr.runningwithrifles.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
+        target: 'http://localhost:5800',
+        changeOrigin: true
+      }
     },
   },
   resolve: {
