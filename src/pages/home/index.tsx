@@ -11,6 +11,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   useReactTable,
 } from '@tanstack/react-table';
 import {
@@ -54,6 +55,10 @@ const Home: React.FC = () => {
   const [columnVisibility, setColumnVisibility] = useState(
     INITIAL_COLUMNS_VISIBILITY,
   );
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
   const { toast } = useToast();
 
   const {
@@ -103,6 +108,7 @@ const Home: React.FC = () => {
     data: tableData,
     state: {
       columnVisibility,
+      pagination,
     },
     filterFns: {
       fuzzy: onFuzzyFilter,
@@ -112,21 +118,28 @@ const Home: React.FC = () => {
     globalFilterFn: onFuzzyFilter,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    autoResetPageIndex: true,
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
   });
 
-  const onSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    table.setGlobalFilter(value);
-  }, []);
+  const onSearch = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.currentTarget.value;
+      console.log('Searching for:', value);
+      setSearchQuery(value);
+      table.setGlobalFilter(value);
+      // table.resetPagination();
+      // table.setPageSize(table.getState().pagination.pageSize);
+    },
+    [table],
+  );
 
   const onReset = useCallback(() => {
     setSearchQuery('');
     table.setGlobalFilter(null);
-  }, []);
+    table.resetPagination();
+    // table.setPageSize(table.getState().pagination.pageSize);
+  }, [table]);
 
   const onRefresh = useCallback(() => {
     console.log('Refreshing data...');
@@ -134,7 +147,9 @@ const Home: React.FC = () => {
     mutate();
     setSearchQuery('');
     table.setGlobalFilter(null);
-  }, [mutate]);
+    table.resetPagination();
+    // table.setPageSize(table.getState().pagination.pageSize);
+  }, [mutate, table]);
 
   const onColumnToggle = useCallback(
     (columnId: string) => {
@@ -197,13 +212,26 @@ const Home: React.FC = () => {
         </div>
         <div class="flex items-center min-h-[32px]">
           <p className="flex items-center gap-2">
-            <span>Total:</span>
+            <span>Total Servers:</span>
             <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
               {tableData.length}
             </code>
-            <span>Filtered:</span>
+            <span>Filtered Servers:</span>
             <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
               {table.getFilteredRowModel().rows.length}
+            </code>
+            <span>Total Players:</span>
+            <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+              {tableData.reduce((acc, cur) => acc + cur.currentPlayers, 0)}
+            </code>
+            <span>Filtered Players:</span>
+            <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+              {table
+                .getFilteredRowModel()
+                .rows.reduce(
+                  (acc, cur) => acc + cur.original.currentPlayers,
+                  0,
+                )}
             </code>
           </p>
         </div>
