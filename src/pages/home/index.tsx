@@ -85,14 +85,18 @@ const Home: React.FC = () => {
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, columnId, filterValue) => {
       const rowValue = row.getValue(columnId);
-      console.log('onFuzzyFilter: columnId:', columnId);
-      if (columnId === 'player_list') {
-        console.log('rowValue is array', rowValue, row);
+      if (columnId === 'current_players') {
+        return row.original.playerList.some((player) => {
+          return (
+            typeof player === 'string' &&
+            player.toLowerCase().includes(filterValue.toLowerCase())
+          );
+        });
       }
       if (typeof rowValue === 'string') {
         return rowValue.toLowerCase().includes(filterValue.toLowerCase());
       } else if (Array.isArray(rowValue)) {
-        console.log('rowValue is array', rowValue);
+        // console.log('rowValue is array', rowValue);
         return rowValue.some((value) =>
           value.toLowerCase().includes(filterValue.toLowerCase()),
         );
@@ -127,29 +131,46 @@ const Home: React.FC = () => {
       const value = e.currentTarget.value;
       console.log('Searching for:', value);
       setSearchQuery(value);
+
+      // 先设置过滤条件
       table.setGlobalFilter(value);
-      // table.resetPagination();
-      // table.setPageSize(table.getState().pagination.pageSize);
+      const filteredRows = table.getFilteredRowModel().rows;
+      const pageCount = table.getPageCount();
+      const flatRows = table.getFilteredRowModel().flatRows;
+      console.log('Filtered rows:', filteredRows, pageCount, flatRows);
+
+      // 重置分页状态
+      setPagination({
+        pageIndex: 0,
+        pageSize: pagination.pageSize,
+      });
     },
-    [table],
+    [table, pagination.pageSize],
   );
 
   const onReset = useCallback(() => {
     setSearchQuery('');
-    table.setGlobalFilter(null);
-    table.resetPagination();
-    // table.setPageSize(table.getState().pagination.pageSize);
-  }, [table]);
+    table.setGlobalFilter('');
+
+    // 重置分页状态
+    setPagination({
+      pageIndex: 0,
+      pageSize: pagination.pageSize,
+    });
+  }, [table, pagination.pageSize]);
 
   const onRefresh = useCallback(() => {
     console.log('Refreshing data...');
-
     mutate();
     setSearchQuery('');
-    table.setGlobalFilter(null);
-    table.resetPagination();
-    // table.setPageSize(table.getState().pagination.pageSize);
-  }, [mutate, table]);
+    table.setGlobalFilter('');
+
+    // 重置分页状态
+    setPagination({
+      pageIndex: 0,
+      pageSize: pagination.pageSize,
+    });
+  }, [mutate, table, pagination.pageSize]);
 
   const onColumnToggle = useCallback(
     (columnId: string) => {

@@ -22,6 +22,10 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     id: 'map_name',
     accessorKey: 'mapName',
     header: 'Map',
+    cell: ({ row }) => {
+      const lastMapId = row.original.mapId.split('/').pop();
+      return lastMapId;
+    },
   },
   {
     id: 'bots',
