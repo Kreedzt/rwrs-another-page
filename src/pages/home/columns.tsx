@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -105,5 +106,24 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     id: 'version',
     accessorKey: 'version',
     header: 'Version',
+  },
+  {
+    id: 'action',
+    accessorKey: 'timeStamp',
+    filterFn: () => false,
+    header: 'Action',
+    cell: ({ row }) => {
+      const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} server_port=${row.original.port}`;
+      return (
+        <Button
+          onClick={() => {
+            window.open(openUrl, '_blank');
+          }}
+          variant={'outline'}
+        >
+          Join
+        </Button>
+      );
+    },
   },
 ];

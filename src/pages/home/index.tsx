@@ -48,6 +48,7 @@ const INITIAL_COLUMNS_VISIBILITY: Record<string, boolean> = {
   mode: true,
   realm: false,
   version: false,
+  action: true,
 };
 
 // Get initial search query from URL
@@ -130,6 +131,8 @@ const Home: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
+    manualPagination: false,
+    autoResetPageIndex: true, // 当过滤条件改变时自动重置页码
   });
 
   // Update URL when search query changes
@@ -140,16 +143,10 @@ const Home: React.FC = () => {
     } else {
       params.delete('search');
     }
-    
+
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
     window.history.pushState({}, '', newUrl);
   }, []);
-
-  // 监听 searchQuery 变化
-  useEffect(() => {
-    if (!table) return;
-    // table.setGlobalFilter(searchQuery);
-  }, [searchQuery, table]);
 
   const onSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,13 +154,13 @@ const Home: React.FC = () => {
       setSearchQuery(value);
       updateSearchParams(value);
 
-      // Reset pagination state
-      setPagination({
+      // 搜索时总是重置到第一页
+      setPagination((prev) => ({
+        ...prev,
         pageIndex: 0,
-        pageSize: pagination.pageSize,
-      });
+      }));
     },
-    [pagination.pageSize, updateSearchParams],
+    [updateSearchParams],
   );
 
   const onReset = useCallback(() => {
@@ -205,6 +202,27 @@ const Home: React.FC = () => {
     },
     [table],
   );
+
+  // 监听搜索条件变化，更新分页状态
+  useEffect(() => {
+    // 获取过滤后的数据总行数
+    const filteredRowsLength = table.getFilteredRowModel().rows.length;
+    const currentPageSize = pagination.pageSize;
+
+    // 计算最大页数
+    const maxPageIndex = Math.max(
+      0,
+      Math.ceil(filteredRowsLength / currentPageSize) - 1,
+    );
+
+    // 如果当前页码超出范围，重置为最后一页
+    if (pagination.pageIndex > maxPageIndex) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: maxPageIndex,
+      }));
+    }
+  }, [searchQuery, table, pagination.pageSize]);
 
   return (
     <div class="container min-h-screen">
