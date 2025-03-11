@@ -99,6 +99,10 @@ const Home: React.FC = () => {
           );
         });
       }
+      if (columnId === 'map_name') {
+        const lastMapId = row.original.mapId.split('/').pop();
+        return lastMapId?.includes(filterValue) ?? false;
+      }
       if (typeof rowValue === 'string') {
         return rowValue.toLowerCase().includes(filterValue.toLowerCase());
       } else if (Array.isArray(rowValue)) {
@@ -236,7 +240,7 @@ const Home: React.FC = () => {
               type="text"
               value={searchQuery}
               onInput={onSearch}
-              placeholder="Search name, ip, port, map, players, etc..."
+              placeholder="Search name, ip, map, players, mode, etc..."
               disabled={isLoading}
             ></SearchInput>
             <Button className="ml-2" disabled={isLoading} onClick={onReset}>
