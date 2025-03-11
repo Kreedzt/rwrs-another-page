@@ -11,8 +11,8 @@ import {
 import { DataTableService } from '@/services/data-table.service';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { useToast } from '@/hooks/use-toast';
-import { columns } from './columns';
-import { DataList } from './data-list';
+import { columns } from './components/ColumnsA';
+import { DataList } from './components/DataList';
 import { TableHeader } from './components/TableHeader';
 import { TableStats } from './components/TableStats';
 import { useTableSearch } from './hooks/useTableSearch';
@@ -50,6 +50,7 @@ const Home: React.FC = () => {
         description: err.message,
       });
     },
+    refreshInterval: 10 * 1000,
   });
 
   const table = useReactTable<IDisplayServerItem>({

@@ -1,4 +1,4 @@
-import { columns } from './columns';
+import { columns } from './components/ColumnsA';
 
 export const COLUMNS_LIST = columns.map((c) => ({
   id: c.id,
