@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'preact/compat';
+import React, { useCallback, useState, useEffect } from 'preact/compat';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { columns } from './columns';
@@ -50,8 +50,14 @@ const INITIAL_COLUMNS_VISIBILITY: Record<string, boolean> = {
   version: false,
 };
 
+// Get initial search query from URL
+const getInitialSearchQuery = () => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('search') || '';
+};
+
 const Home: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(getInitialSearchQuery());
   const [columnVisibility, setColumnVisibility] = useState(
     INITIAL_COLUMNS_VISIBILITY,
   );
@@ -68,7 +74,6 @@ const Home: React.FC = () => {
   } = useSWR('/api/data-table', DataTableService.listAll, {
     onSuccess: () => {
       const now = new Date().toLocaleTimeString();
-
       toast({
         title: 'Refresh server list success',
         description: `Data fetched successfully on ${now}`,
@@ -113,6 +118,7 @@ const Home: React.FC = () => {
     state: {
       columnVisibility,
       pagination,
+      globalFilter: searchQuery, // 直接使用 searchQuery 作为全局过滤器
     },
     filterFns: {
       fuzzy: onFuzzyFilter,
@@ -126,51 +132,63 @@ const Home: React.FC = () => {
     onPaginationChange: setPagination,
   });
 
+  // Update URL when search query changes
+  const updateSearchParams = useCallback((query: string) => {
+    const params = new URLSearchParams(window.location.search);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.pushState({}, '', newUrl);
+  }, []);
+
+  // 监听 searchQuery 变化
+  useEffect(() => {
+    if (!table) return;
+    // table.setGlobalFilter(searchQuery);
+  }, [searchQuery, table]);
+
   const onSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value;
-      console.log('Searching for:', value);
       setSearchQuery(value);
+      updateSearchParams(value);
 
-      // 先设置过滤条件
-      table.setGlobalFilter(value);
-      const filteredRows = table.getFilteredRowModel().rows;
-      const pageCount = table.getPageCount();
-      const flatRows = table.getFilteredRowModel().flatRows;
-      console.log('Filtered rows:', filteredRows, pageCount, flatRows);
-
-      // 重置分页状态
+      // Reset pagination state
       setPagination({
         pageIndex: 0,
         pageSize: pagination.pageSize,
       });
     },
-    [table, pagination.pageSize],
+    [pagination.pageSize, updateSearchParams],
   );
 
   const onReset = useCallback(() => {
     setSearchQuery('');
-    table.setGlobalFilter('');
+    updateSearchParams('');
 
-    // 重置分页状态
+    // Reset pagination state
     setPagination({
       pageIndex: 0,
       pageSize: pagination.pageSize,
     });
-  }, [table, pagination.pageSize]);
+  }, [pagination.pageSize, updateSearchParams]);
 
   const onRefresh = useCallback(() => {
     console.log('Refreshing data...');
     mutate();
     setSearchQuery('');
-    table.setGlobalFilter('');
+    updateSearchParams('');
 
-    // 重置分页状态
+    // Reset pagination state
     setPagination({
       pageIndex: 0,
       pageSize: pagination.pageSize,
     });
-  }, [mutate, table, pagination.pageSize]);
+  }, [mutate, pagination.pageSize, updateSearchParams]);
 
   const onColumnToggle = useCallback(
     (columnId: string) => {
