@@ -73,11 +73,15 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-wrap">
-          {row.original.playerList.map((player) => (
-            <span key={player} className="mr-2 mb-2">
-              <Badge>{player}</Badge>
-            </span>
-          ))}
+          {row.original.playerList
+            .filter((player) => {
+              return typeof player === 'string' && player.length > 0;
+            })
+            .map((player) => (
+              <span key={player} className="mr-2 mb-2">
+                <Badge>{player}</Badge>
+              </span>
+            ))}
         </div>
       );
     },
