@@ -51,7 +51,7 @@ const Home: React.FC = () => {
         description: err.message,
       });
     },
-    refreshInterval: () => autoRefresh ? 10 * 1000 : 0,
+    refreshInterval: () => (autoRefresh ? 10 * 1000 : 0),
   });
 
   const table = useReactTable<IDisplayServerItem>({
@@ -72,7 +72,6 @@ const Home: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
-    manualPagination: false,
     autoResetPageIndex: true,
   });
 
@@ -84,10 +83,7 @@ const Home: React.FC = () => {
     );
 
     if (pagination.pageIndex > maxPageIndex) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: maxPageIndex,
-      }));
+      // table.setPageIndex(maxPageIndex);
     }
   }, [searchQuery, table, pagination.pageSize]);
 
