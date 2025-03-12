@@ -11,7 +11,7 @@ import {
 import { DataTableService } from '@/services/data-table.service';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { useToast } from '@/hooks/use-toast';
-import { columns } from './components/ColumnsA';
+import { columns } from './components/Columns';
 import { DataList } from './components/DataList';
 import { TableHeader } from './components/TableHeader';
 import { TableStats } from './components/TableStats';
@@ -27,6 +27,7 @@ const Home: React.FC = () => {
     pageIndex: 0,
     pageSize: DEFAULT_PAGE_SIZE,
   });
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const { toast } = useToast();
   const { searchQuery, handleSearch, handleReset } = useTableSearch();
@@ -50,7 +51,7 @@ const Home: React.FC = () => {
         description: err.message,
       });
     },
-    refreshInterval: 10 * 1000,
+    refreshInterval: () => autoRefresh ? 10 * 1000 : 0,
   });
 
   const table = useReactTable<IDisplayServerItem>({
@@ -124,6 +125,8 @@ const Home: React.FC = () => {
           onReset={onReset}
           onRefresh={onRefresh}
           onColumnToggle={onColumnToggle}
+          autoRefresh={autoRefresh}
+          onAutoRefreshChange={setAutoRefresh}
         />
         <TableStats table={table} tableData={tableData} />
       </div>

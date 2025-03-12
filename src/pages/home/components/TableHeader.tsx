@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/custom/search-input';
 import { ColumnToggle } from './ColumnToggle';
 import { COLUMNS_LIST } from '../constants';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface TableHeaderProps {
   searchQuery: string;
@@ -12,6 +14,8 @@ interface TableHeaderProps {
   onReset: () => void;
   onRefresh: () => void;
   onColumnToggle: (columnId: string) => void;
+  autoRefresh: boolean;
+  onAutoRefreshChange: (checked: boolean) => void;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
@@ -22,6 +26,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onReset,
   onRefresh,
   onColumnToggle,
+  autoRefresh,
+  onAutoRefreshChange,
 }) => {
   return (
     <div class="flex flex-col space-y-2 h-[120px] py-2">
@@ -35,6 +41,14 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           placeholder="Search name, ip, map, players, etc..."
           disabled={isLoading}
         />
+        <div class="ml-2 flex items-center space-x-2">
+          <Switch
+            id="auto-refresh"
+            checked={autoRefresh}
+            onCheckedChange={onAutoRefreshChange}
+          />
+          <Label htmlFor="auto-refresh">Auto Refresh</Label>
+        </div>
         <Button className="ml-2" disabled={isLoading} onClick={onReset}>
           Reset
         </Button>

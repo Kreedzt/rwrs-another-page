@@ -1,9 +1,11 @@
-import { columns } from './components/ColumnsA';
+import { columns } from './components/Columns';
 
-export const COLUMNS_LIST = columns.map((c) => ({
-  id: c.id,
-  title: c.header,
-}));
+export const COLUMNS_LIST: Array<{ id: string; title: string }> = columns.map(
+  (c) => ({
+    id: c.id!,
+    title: typeof c.header === 'string' ? c.header : String(c.header),
+  }),
+);
 
 export const INITIAL_COLUMNS_VISIBILITY: Record<string, boolean> = {
   name: true,
