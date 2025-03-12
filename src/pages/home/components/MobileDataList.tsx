@@ -14,16 +14,27 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
     if (!searchQuery) return data;
     const query = searchQuery.toLowerCase();
 
-    return data.filter(
-      (item) =>
-        item.name.toLowerCase().includes(query) ||
-        item.mapName?.toLowerCase().includes(query) ||
-        item.mode.toLowerCase().includes(query) ||
+    return data.filter((item) => {
+      const lastMapId = item.mapId.split('/').pop();
+      if (lastMapId?.toLowerCase().includes(query)) return true;
+
+      if (item.ipAddress.includes(query)) return true;
+
+      if (item.country.toLowerCase().includes(query)) return true;
+
+      if (item.mode.toLowerCase().includes(query)) return true;
+
+      if (item.name.toString().toLowerCase().includes(query)) return true;
+
+      if (
         item.playerList.some(
-          (player) =>
-            typeof player === 'string' && player.toLowerCase().includes(query),
-        ),
-    );
+          (player) => typeof player === 'string' && player.includes(query),
+        )
+      )
+        return true;
+
+      return false;
+    });
   }, [data, searchQuery]);
 
   const toggleRow = (serverId: string) => {

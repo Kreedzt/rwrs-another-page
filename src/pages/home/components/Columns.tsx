@@ -10,7 +10,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
   },
   {
     accessorKey: 'ipAddress',
-    header: 'IP Address',
+    header: 'IP',
   },
   {
     accessorKey: 'port',
@@ -31,7 +31,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
       <Badge variant="secondary">{row.getValue('mode')}</Badge>
     ),
   },
-    {
+  {
     accessorKey: 'mapName',
     header: 'Map',
     cell: ({ row }) => {

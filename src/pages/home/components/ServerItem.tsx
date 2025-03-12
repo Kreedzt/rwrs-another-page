@@ -46,9 +46,7 @@ export const ServerItem: React.FC<ServerItemProps> = ({
               <span className="font-medium">Player List:</span>
               <div className="mt-1 flex flex-wrap gap-1">
                 {server.playerList.map((player, idx) => (
-                  <Badge key={idx} variant="outline">
-                    {player}
-                  </Badge>
+                  <Badge key={idx}>{player}</Badge>
                 ))}
               </div>
             </div>

@@ -38,7 +38,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           type="text"
           value={searchQuery}
           onInput={onSearch}
-          placeholder="Search servers..."
+          placeholder="Search servers, maps, players, mode, country, etc..."
           disabled={isLoading}
         />
         <div class="items-center hidden md:flex">
