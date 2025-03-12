@@ -7,9 +7,13 @@ export const COLUMNS_LIST: Array<{ id: string; title: string }> = columns.map(
   }),
 );
 
-export const INITIAL_COLUMNS_VISIBILITY: Record<string, boolean> = {
+export const INITIAL_COLUMNS_VISIBILITY = {
   name: true,
-  ip_address: true,
+  mapName: true,
+  mode: true,
+  playerCount: true,
+  playerList: true,
+  ipAddress: true,
   port: true,
   map_name: true,
   bots: true,
@@ -20,7 +24,6 @@ export const INITIAL_COLUMNS_VISIBILITY: Record<string, boolean> = {
   player_list: true,
   comment: false,
   url: false,
-  mode: true,
   realm: false,
   version: false,
   action: true,

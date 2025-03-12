@@ -1,34 +1,30 @@
+import { cn } from '@/lib/utils';
 import React from 'preact/compat';
-import { Table } from '@tanstack/react-table';
-import { IDisplayServerItem } from '@/models/data-table.model';
 
 interface TableStatsProps {
-  table: Table<IDisplayServerItem>;
-  tableData: IDisplayServerItem[];
+  filteredCount: number;
+  totalCount: number;
+  filteredPlayerCount: number;
+  totalPlayerCount: number;
+  className?: string;
 }
 
-export const TableStats: React.FC<TableStatsProps> = ({ table, tableData }) => {
+export const TableStats: React.FC<TableStatsProps> = ({
+  className,
+  filteredCount,
+  totalCount,
+  filteredPlayerCount,
+  totalPlayerCount,
+}) => {
   return (
-    <div class="flex items-center min-h-[32px]">
-      <p className="flex items-center gap-2 mb-2">
-        <span>Total Servers:</span>
-        <code className="relative rounded bg-muted px-1 py-1 font-mono text-sm font-semibold">
-          {tableData.length}
-        </code>
-        <span>Filtered Servers:</span>
-        <code className="relative rounded bg-muted px-1 py-1 font-mono text-sm font-semibold">
-          {table.getFilteredRowModel().rows.length}
-        </code>
-        <span>Total Players:</span>
-        <code className="relative rounded bg-muted px-1 py-1 font-mono text-sm font-semibold">
-          {tableData.reduce((acc, cur) => acc + cur.currentPlayers, 0)}
-        </code>
-        <span>Filtered Players:</span>
-        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-          {table
-            .getFilteredRowModel()
-            .rows.reduce((acc, cur) => acc + cur.original.currentPlayers, 0)}
-        </code>
+    <div class={cn('text-sm text-muted-foreground', className)}>
+      <p>
+        <span className="text-primary">{filteredCount}</span> of{' '}
+        <span className="text-primary">{totalCount}</span> servers
+      </p>
+      <p>
+        <span className="text-primary">{filteredPlayerCount}</span> of{' '}
+        <span class="text-primary">{totalPlayerCount}</span> players
       </p>
     </div>
   );

@@ -1,36 +1,36 @@
 import React from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/custom/search-input';
-import { ColumnToggle } from './ColumnToggle';
-import { COLUMNS_LIST } from '../constants';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { ColumnToggle } from './ColumnToggle';
+import { COLUMNS_LIST } from '../constants';
 
 interface TableHeaderProps {
   searchQuery: string;
   isLoading: boolean;
-  columnVisibility: Record<string, boolean>;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onReset: () => void;
   onRefresh: () => void;
-  onColumnToggle: (columnId: string) => void;
   autoRefresh: boolean;
   onAutoRefreshChange: (checked: boolean) => void;
+  columnVisibility: Record<string, boolean>;
+  onColumnToggle: (columnId: string) => void;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
   searchQuery,
   isLoading,
-  columnVisibility,
   onSearch,
   onReset,
   onRefresh,
-  onColumnToggle,
   autoRefresh,
   onAutoRefreshChange,
+  columnVisibility,
+  onColumnToggle,
 }) => {
   return (
-    <div class="flex flex-col space-y-2 h-[120px] py-2">
+    <div class="flex flex-col space-y-2 py-2 h-[80px] md:h-[120px]">
       <h1 class="text-xl font-bold">RWRS Another Page</h1>
       <div class="w-full flex items-center">
         <SearchInput
@@ -38,28 +38,32 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           type="text"
           value={searchQuery}
           onInput={onSearch}
-          placeholder="Search name, ip, map, players, etc..."
+          placeholder="Search servers..."
           disabled={isLoading}
         />
-        <div class="ml-2 flex items-center space-x-2">
-          <Switch
-            id="auto-refresh"
-            checked={autoRefresh}
-            onCheckedChange={onAutoRefreshChange}
-          />
-          <Label htmlFor="auto-refresh">Auto Refresh</Label>
+        <div class="items-center hidden md:flex">
+          <Button className="ml-2" disabled={isLoading} onClick={onReset}>
+            Reset
+          </Button>
+          <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
+            Refresh
+          </Button>
+          <div className="ml-2">
+            <Switch
+              checked={autoRefresh}
+              onCheckedChange={onAutoRefreshChange}
+              disabled={isLoading}
+            />
+            <Label className="ml-2">Auto Refresh</Label>
+          </div>
+          <div className="ml-2">
+            <ColumnToggle
+              columnsList={COLUMNS_LIST}
+              columnVisibility={columnVisibility}
+              onColumnToggle={onColumnToggle}
+            />
+          </div>
         </div>
-        <Button className="ml-2" disabled={isLoading} onClick={onReset}>
-          Reset
-        </Button>
-        <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
-          Refresh
-        </Button>
-        <ColumnToggle
-          columnsList={COLUMNS_LIST}
-          columnVisibility={columnVisibility}
-          onColumnToggle={onColumnToggle}
-        />
       </div>
     </div>
   );

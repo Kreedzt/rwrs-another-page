@@ -118,13 +118,21 @@ const TablePagination: FC<{
   );
 };
 
-export function DataList<TData, TValue>({
+export const DataList: React.FC<DataTableProps<any, any>> = ({
   table,
   columns,
   isLoading,
-}: DataTableProps<TData, TValue>) {
+}) => {
+  if (isLoading) {
+    return (
+      <div className="hidden md:flex justify-center items-center h-32">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-md border">
+    <div className="w-full">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -172,4 +180,4 @@ export function DataList<TData, TValue>({
       </div>
     </div>
   );
-}
+};

@@ -1,128 +1,111 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { IDisplayServerItem } from '@/models/data-table.model';
-import { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<IDisplayServerItem>[] = [
   {
-    id: 'name',
     accessorKey: 'name',
     header: 'Name',
   },
   {
-    id: 'ip_address',
     accessorKey: 'ipAddress',
-    header: 'IP',
+    header: 'IP Address',
   },
   {
-    id: 'port',
     accessorKey: 'port',
     header: 'Port',
   },
   {
-    id: 'map_name',
-    accessorKey: 'mapName',
-    header: 'Map',
-    cell: ({ row }) => {
-      const lastMapId = row.original.mapId.split('/').pop();
-      return lastMapId;
-    },
-  },
-  {
-    id: 'bots',
     accessorKey: 'bots',
     header: 'Bots',
   },
   {
-    id: 'country',
     accessorKey: 'country',
     header: 'Country',
   },
   {
-    id: 'current_players',
-    accessorKey: 'currentPlayers',
-    header: 'Capacity',
-    cell: ({ row }) => {
-      return `${row.original.currentPlayers}/${row.original.maxPlayers}`;
-    },
-  },
-  {
-    id: 'dedicated',
-    accessorKey: 'dedicated',
-    header: 'Dedicated',
-    cell: ({ row }) => {
-      return row.original.dedicated ? 'Yes' : 'No';
-    },
-  },
-  {
-    id: 'mod',
-    accessorKey: 'mod',
-    header: 'Mod',
-    cell: ({ row }) => {
-      return row.original.mod === 1 ? 'Yes' : 'No';
-    },
-  },
-  {
-    id: 'mode',
     accessorKey: 'mode',
     header: 'Mode',
+    cell: ({ row }) => (
+      <Badge variant="secondary">{row.getValue('mode')}</Badge>
+    ),
   },
   {
-    id: 'player_list',
+    accessorKey: 'mapName',
+    header: 'Map',
+    cell: ({ row }) => {
+      const lastMapId = row.original.mapId.split('/').pop();
+      return <Badge variant="outline">{lastMapId}</Badge>;
+    },
+  },
+  {
+    accessorKey: 'playerCount',
+    header: 'Capacity',
+    cell: ({ row }) => {
+      const server = row.original;
+      return `${server.currentPlayers} / ${server.maxPlayers}`;
+    },
+  },
+  {
     accessorKey: 'playerList',
     header: 'Players',
     cell: ({ row }) => {
+      const players = row.getValue('playerList') as string[];
       return (
-        <div className="flex flex-wrap">
-          {row.original.playerList
+        <div className="flex flex-wrap gap-1">
+          {players
             .filter((player) => {
               return typeof player === 'string' && player.length > 0;
             })
-            .map((player) => (
-              <span key={player} className="mr-2 mb-2">
-                <Badge>{player}</Badge>
-              </span>
+            .map((player, idx) => (
+              <Badge key={idx}>{player}</Badge>
             ))}
         </div>
       );
     },
   },
   {
-    id: 'comment',
     accessorKey: 'comment',
     header: 'Comment',
   },
   {
-    id: 'url',
+    accessorKey: 'dedicated',
+    header: 'Dedicated',
+    cell: ({ row }) => {
+      const isDedicated = row.getValue('dedicated') as boolean;
+      return isDedicated ? 'Yes' : 'No';
+    },
+  },
+  {
     accessorKey: 'url',
     header: 'URL',
+    cell: ({ row }) => {
+      const url = row.getValue('url') as string;
+      return (
+        <a href={url} target="_blank">
+          {url}
+        </a>
+      );
+    },
   },
   {
-    id: 'realm',
-    accessorKey: 'realm',
-    header: 'Realm',
-  },
-  {
-    id: 'version',
     accessorKey: 'version',
     header: 'Version',
   },
   {
-    id: 'action',
-    accessorKey: 'timeStamp',
-    filterFn: () => false,
+    accessorKey: 'timestamp',
     header: 'Action',
     cell: ({ row }) => {
-      const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} server_port=${row.original.port}`;
+      const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} ${row.original.port}`;
       return (
-        <Button
-          onClick={() => {
-            window.open(openUrl, '_blank');
-          }}
-          variant={'outline'}
-        >
-          Join
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline">
+            <a href={openUrl} target="_blank">
+              Join
+            </a>
+          </Button>
+        </div>
       );
     },
   },
