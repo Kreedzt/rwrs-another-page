@@ -2,7 +2,7 @@ import { columns } from './components/Columns';
 
 export const COLUMNS_LIST: Array<{ id: string; title: string }> = columns.map(
   (c) => ({
-    id: c.id!,
+    id: (c as any).accessorKey,
     title: typeof c.header === 'string' ? c.header : String(c.header),
   }),
 );
@@ -21,12 +21,12 @@ export const INITIAL_COLUMNS_VISIBILITY = {
   current_players: true,
   dedicated: false,
   mod: false,
-  player_list: true,
+  // player_list: true,
   comment: false,
   url: false,
   realm: false,
   version: false,
-  action: true,
+  timestamp: true,
 };
 
 export const DEFAULT_PAGE_SIZE = 20;

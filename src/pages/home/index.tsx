@@ -3,7 +3,6 @@ import useSWR from 'swr';
 import { DataTableService } from '@/services/data-table.service';
 import { useToast } from '@/hooks/use-toast';
 import { TableHeader } from './components/TableHeader';
-import { TableStats } from './components/TableStats';
 import { useTableSearch } from './hooks/useTableSearch';
 import { useTableFilter } from './hooks/useTableFilter';
 import { MobileDataList } from './components/MobileDataList';
@@ -65,6 +64,14 @@ const Home: React.FC = () => {
     handleReset(setPagination, DEFAULT_PAGE_SIZE);
   }, [mutate, handleReset]);
 
+  const onColumnToggle = useCallback((columnId: string, checked: boolean) => {
+    console.log('onColumnToggle', columnId, checked);
+    setColumnVisibility((prev) => ({
+      ...prev,
+      [columnId]: checked
+    }));
+  }, []);
+
   return (
     <div className="flex flex-col items-center min-h-screen">
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4">
@@ -77,12 +84,7 @@ const Home: React.FC = () => {
           autoRefresh={autoRefresh}
           onAutoRefreshChange={setAutoRefresh}
           columnVisibility={columnVisibility}
-          onColumnToggle={(columnId) => {
-            setColumnVisibility((prev) => ({
-              ...prev,
-              [columnId]: !prev[columnId],
-            }));
-          }}
+          onColumnToggle={onColumnToggle}
         />
 
         <PCDataTable

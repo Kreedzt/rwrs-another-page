@@ -31,7 +31,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
       <Badge variant="secondary">{row.getValue('mode')}</Badge>
     ),
   },
-  {
+    {
     accessorKey: 'mapName',
     header: 'Map',
     cell: ({ row }) => {

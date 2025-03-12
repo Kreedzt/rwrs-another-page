@@ -15,7 +15,7 @@ interface TableHeaderProps {
   autoRefresh: boolean;
   onAutoRefreshChange: (checked: boolean) => void;
   columnVisibility: Record<string, boolean>;
-  onColumnToggle: (columnId: string) => void;
+  onColumnToggle: (columnId: string, checked: boolean) => void;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
@@ -48,7 +48,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
             Refresh
           </Button>
-          <div className="ml-2">
+          <div className="ml-2 flex items-center">
             <Switch
               checked={autoRefresh}
               onCheckedChange={onAutoRefreshChange}

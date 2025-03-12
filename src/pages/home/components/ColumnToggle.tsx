@@ -12,7 +12,7 @@ import {
 interface ColumnToggleProps {
   columnsList: Array<{ id: string; title: string }>;
   columnVisibility: Record<string, boolean>;
-  onColumnToggle: (columnId: string) => void;
+  onColumnToggle: (columnId: string, checked: boolean) => void;
 }
 
 export const ColumnToggle: React.FC<ColumnToggleProps> = ({
@@ -20,6 +20,7 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
   columnVisibility,
   onColumnToggle,
 }) => {
+  console.log('columnVisibility', columnVisibility);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,7 +35,7 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
           <DropdownMenuCheckboxItem
             key={c.id}
             checked={columnVisibility[c.id]}
-            onClick={() => onColumnToggle(c.id)}
+            onCheckedChange={(checked: boolean) => onColumnToggle(c.id, checked)}
           >
             {c.title}
           </DropdownMenuCheckboxItem>
