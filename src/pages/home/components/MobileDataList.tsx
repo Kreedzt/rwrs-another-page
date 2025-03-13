@@ -16,19 +16,22 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
 
     return data.filter((item) => {
       const lastMapId = item.mapId.split('/').pop();
-      if (lastMapId?.toLowerCase().includes(query)) return true;
+      if (lastMapId?.toLowerCase().includes(query.toLowerCase())) return true;
 
       if (item.ipAddress.includes(query)) return true;
 
       if (item.country.toLowerCase().includes(query)) return true;
 
-      if (item.mode.toLowerCase().includes(query)) return true;
+      if (item.mode.toLowerCase().includes(query.toLowerCase())) return true;
 
-      if (item.name.toString().toLowerCase().includes(query)) return true;
+      if (item.name.toString().toLowerCase().includes(query.toLowerCase()))
+        return true;
 
       if (
         item.playerList.some(
-          (player) => typeof player === 'string' && player.includes(query),
+          (player) =>
+            typeof player === 'string' &&
+            player.toLowerCase().includes(query.toLowerCase()),
         )
       )
         return true;
