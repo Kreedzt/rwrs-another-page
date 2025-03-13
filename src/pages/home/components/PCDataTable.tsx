@@ -11,12 +11,12 @@ import { IDisplayServerItem } from '@/models/data-table.model';
 import { columns } from './Columns';
 import { DataList } from './DataList';
 import { TableStats } from './TableStats';
+import { useTableFilter } from '../hooks/useTableFilter';
 
 interface PCDataTableProps {
   data: IDisplayServerItem[];
   isLoading: boolean;
   searchQuery: string;
-  onFuzzyFilter: any;
   pagination: PaginationState;
   setPagination: (
     value: PaginationState | ((prev: PaginationState) => PaginationState),
@@ -31,12 +31,13 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
   data,
   isLoading,
   searchQuery,
-  onFuzzyFilter,
   pagination,
   setPagination,
   columnVisibility,
   setColumnVisibility,
 }) => {
+  const { onFuzzyFilter } = useTableFilter();
+
   const table = useReactTable<IDisplayServerItem>({
     columns,
     data,
@@ -67,9 +68,10 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
         filteredPlayerCount={table
           .getFilteredRowModel()
           .rows.reduce((acc, row) => acc + row.original.currentPlayers, 0)}
-        totalPlayerCount={table
-          .getFilteredRowModel()
-          .rows.reduce((acc, row) => acc + row.original.maxPlayers, 0)}
+        totalPlayerCount={data.reduce(
+          (acc, row) => acc + row.currentPlayers,
+          0,
+        )}
       />
       <DataList isLoading={isLoading} table={table} columns={columns} />
     </div>

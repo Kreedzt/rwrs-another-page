@@ -32,10 +32,10 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     ),
   },
   {
-    accessorKey: 'mapName',
+    accessorKey: 'mapId',
     header: 'Map',
     cell: ({ row }) => {
-      const lastMapId = row.original.mapId.split('/').pop();
+      const lastMapId = (row.getValue('mapId') as string).split('/').pop();
       return <Badge variant="outline">{lastMapId}</Badge>;
     },
   },

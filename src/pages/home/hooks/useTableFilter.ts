@@ -6,16 +6,15 @@ export function useTableFilter() {
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, columnId, filterValue) => {
       const rowValue = row.getValue(columnId);
+      console.log('touch filter', columnId, filterValue);
 
-      if (columnId === 'current_players') {
-        return row.original.playerList.some(
-          (player) =>
-            typeof player === 'string' &&
-            player.toLowerCase().includes(filterValue.toLowerCase()),
+      if (columnId === 'playerList') {
+        return row.original.playerList.some((player) =>
+          player.toString().toLowerCase().includes(filterValue.toLowerCase()),
         );
       }
 
-      if (columnId === 'map_name') {
+      if (columnId === 'mapId') {
         const lastMapId = row.original.mapId.split('/').pop();
         return lastMapId?.includes(filterValue) ?? false;
       }

@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'preact/compat';
+import React, { useCallback, useState } from 'preact/compat';
 import useSWR from 'swr';
 import { DataTableService } from '@/services/data-table.service';
 import { useToast } from '@/hooks/use-toast';
 import { TableHeader } from './components/TableHeader';
 import { useTableSearch } from './hooks/useTableSearch';
-import { useTableFilter } from './hooks/useTableFilter';
 import { MobileDataList } from './components/MobileDataList';
 import { PCDataTable } from './components/PCDataTable';
 import { DEFAULT_PAGE_SIZE, INITIAL_COLUMNS_VISIBILITY } from './constants';
@@ -14,7 +13,6 @@ const Home: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const { toast } = useToast();
   const { searchQuery, handleSearch, handleReset } = useTableSearch();
-  const { onFuzzyFilter } = useTableFilter();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -22,10 +20,6 @@ const Home: React.FC = () => {
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
   >(INITIAL_COLUMNS_VISIBILITY);
-
-  useEffect(() => {
-    console.log('touch columnVisibility', columnVisibility);
-  }, []);
 
   const {
     data: tableData = [],
@@ -65,10 +59,9 @@ const Home: React.FC = () => {
   }, [mutate, handleReset]);
 
   const onColumnToggle = useCallback((columnId: string, checked: boolean) => {
-    console.log('onColumnToggle', columnId, checked);
     setColumnVisibility((prev) => ({
       ...prev,
-      [columnId]: checked
+      [columnId]: checked,
     }));
   }, []);
 
@@ -91,7 +84,6 @@ const Home: React.FC = () => {
           data={tableData}
           isLoading={isLoading}
           searchQuery={searchQuery}
-          onFuzzyFilter={onFuzzyFilter}
           pagination={pagination}
           setPagination={setPagination}
           columnVisibility={columnVisibility}

@@ -20,7 +20,6 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
   columnVisibility,
   onColumnToggle,
 }) => {
-  console.log('columnVisibility', columnVisibility);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
