@@ -41,6 +41,28 @@ export const ServerItem: React.FC<ServerItemProps> = ({
             <span className="font-medium">IP:</span> {server.ipAddress}:
             {server.port}
           </div>
+          <div className="text-sm">
+            <span className="font-medium">Country:</span> {server.country}
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Bots:</span> {server.bots}
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Dedicated:</span>{' '}
+            {server.dedicated ? 'Yes' : 'No'}
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Comment:</span> {server.comment}
+          </div>
+          <div className="text-sm overflow-hidden">
+            <span className="font-medium">URL:</span>{' '}
+            <a href={server.url ?? ''} target="_blank" className="text-ellipsis">
+              {server.url}
+            </a>
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Version:</span> {server.version}
+          </div>
           {server.playerList.length > 0 && (
             <div className="text-sm">
               <span className="font-medium">Player List:</span>
