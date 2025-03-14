@@ -1,4 +1,4 @@
-import React from 'preact/compat';
+import React, { useEffect, useMemo } from 'preact/compat';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -38,16 +38,25 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
 }) => {
   const { onFuzzyFilter } = useTableFilter();
 
+  useEffect(() => {
+    console.log('touch columns', columns);
+  }, [columns]);
+
+  useEffect(() => {
+    console.log('touch columnVisibility', columnVisibility);
+  }, [columnVisibility]);
+
+  const testData = useMemo(() => {
+    return data[0] ? data.slice(0, 1) : [];
+  }, [data]);
+
   const table = useReactTable<IDisplayServerItem>({
     columns,
-    data,
+    data: testData,
     state: {
       columnVisibility,
       pagination,
       globalFilter: searchQuery,
-    },
-    filterFns: {
-      fuzzy: onFuzzyFilter,
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

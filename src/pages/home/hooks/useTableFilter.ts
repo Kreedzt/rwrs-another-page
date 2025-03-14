@@ -8,28 +8,37 @@ export function useTableFilter() {
       const rowValue = row.getValue(columnId);
       console.log('touch filter', columnId, filterValue);
 
-      if (columnId === 'playerList') {
-        return row.original.playerList.some((player) =>
-          player.toString().toLowerCase().includes(filterValue.toLowerCase()),
-        );
+      switch (columnId) {
+        case 'name':
+          return row.original.name
+            .toString()
+            .toLowerCase()
+            .includes(filterValue);
+        case 'ipAddress':
+          return row.original.ipAddress.includes(filterValue);
+        case 'port':
+          return row.original.port.toString().includes(filterValue);
+        case 'country':
+          return row.original.country.toLowerCase().includes(filterValue);
+        case 'mode':
+          return row.original.mode.toLowerCase().includes(filterValue);
+        case 'mapId':
+          return row.original.mapId.split('/').pop()?.includes(filterValue);
+        case 'comment':
+          return row.original.comment?.toLowerCase().includes(filterValue);
+        case 'url':
+          return row.original.url?.toLowerCase().includes(filterValue);
+        case 'version':
+          return row.original.version.toString().includes(filterValue);
+        case 'playerCount':
+          return row.original.currentPlayers.toString().includes(filterValue);
+        case 'playerList':
+          return row.original.playerList.some((player) =>
+            player.toString().toLowerCase().includes(filterValue.toLowerCase()),
+          );
+        default:
+          return false;
       }
-
-      if (columnId === 'mapId') {
-        const lastMapId = row.original.mapId.split('/').pop();
-        return lastMapId?.includes(filterValue) ?? false;
-      }
-
-      if (typeof rowValue === 'string') {
-        return rowValue.toLowerCase().includes(filterValue.toLowerCase());
-      }
-
-      if (Array.isArray(rowValue)) {
-        return rowValue.some((value) =>
-          value.toLowerCase().includes(filterValue.toLowerCase()),
-        );
-      }
-
-      return false;
     },
     [],
   );
