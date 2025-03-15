@@ -38,13 +38,9 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
 }) => {
   const { onFuzzyFilter } = useTableFilter();
 
-  const testData = useMemo(() => {
-    return data[0] ? data.slice(0, 1) : [];
-  }, [data]);
-
   const table = useReactTable<IDisplayServerItem>({
     columns,
-    data: testData,
+    data,
     state: {
       columnVisibility,
       pagination,
