@@ -23,11 +23,15 @@ export function useTableFilter() {
         case 'mode':
           return row.original.mode.toLowerCase().includes(filterValue);
         case 'mapId':
-          return row.original.mapId.split('/').pop()?.includes(filterValue);
+          return (
+            row.original.mapId.split('/').pop()?.includes(filterValue) ?? false
+          );
         case 'comment':
-          return row.original.comment?.toLowerCase().includes(filterValue);
+          return (
+            row.original.comment?.toLowerCase().includes(filterValue) ?? false
+          );
         case 'url':
-          return row.original.url?.toLowerCase().includes(filterValue);
+          return row.original.url?.toLowerCase().includes(filterValue) ?? false;
         case 'version':
           return row.original.version.toString().includes(filterValue);
         case 'playerCount':
