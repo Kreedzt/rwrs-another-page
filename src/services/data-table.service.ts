@@ -2,7 +2,7 @@ import { request } from '@/lib/request';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { parseServerListFromString } from '@/share/utils';
 
-const SERVER_API_URL = '/api/rwr_server_list';
+const SERVER_API_URL = '/api';
 
 interface IDataTableListParams {
   start: number;
@@ -22,7 +22,7 @@ export const DataTableService: IDataTableService = {
       names: params?.names ?? 1,
     };
 
-    const url = `${SERVER_API_URL}/get_server_list.php?start=${queryParams.start}&size=${queryParams.size}&names=${queryParams.names}`;
+    const url = `${SERVER_API_URL}/server_list?start=${queryParams.start}&size=${queryParams.size}&names=${queryParams.names}`;
 
     return request<string>(url, {}, 'text').then((data) => {
       return parseServerListFromString(data);

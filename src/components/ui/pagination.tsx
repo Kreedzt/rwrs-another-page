@@ -1,6 +1,6 @@
 import * as React from 'preact/compat';
 import { cn } from '@/lib/utils';
-import { ButtonProps, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
