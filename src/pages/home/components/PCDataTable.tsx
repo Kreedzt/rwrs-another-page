@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'preact/compat';
+import React, { useMemo } from 'preact/compat';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -37,14 +37,6 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
   setColumnVisibility,
 }) => {
   const { onFuzzyFilter } = useTableFilter();
-
-  useEffect(() => {
-    console.log('touch columns', columns);
-  }, [columns]);
-
-  useEffect(() => {
-    console.log('touch columnVisibility', columnVisibility);
-  }, [columnVisibility]);
 
   const testData = useMemo(() => {
     return data[0] ? data.slice(0, 1) : [];
