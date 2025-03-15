@@ -120,7 +120,7 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
     accessorKey: 'timestamp',
     header: 'Action',
     cell: ({ row }) => {
-      const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} ${row.original.port}`;
+      const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} server_port=${row.original.port}`;
       return (
         <div className="flex gap-2">
           <Button variant="outline">
