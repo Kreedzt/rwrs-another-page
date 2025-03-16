@@ -22,6 +22,7 @@ export const INITIAL_COLUMNS_VISIBILITY = {
   url: false,
   version: false,
   timestamp: true,
+  mod: false,
 };
 
 export const DEFAULT_PAGE_SIZE = 20;

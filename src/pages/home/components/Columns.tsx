@@ -1,64 +1,57 @@
-import { ColumnDef } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-export const columns: ColumnDef<IDisplayServerItem>[] = [
-  {
+const columnHelper = createColumnHelper<IDisplayServerItem>();
+
+export const columns = [
+  columnHelper.display({
     id: 'name',
-    accessorKey: 'name',
+    cell: ({ row }) => row.original.name,
     header: 'Name',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'ipAddress',
-    accessorKey: 'ipAddress',
+    cell: ({ row }) => row.original.ipAddress,
     header: 'IP',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'port',
-    accessorKey: 'port',
+    cell: ({ row }) => row.original.port,
     header: 'Port',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'bots',
-    accessorKey: 'bots',
+    cell: ({ row }) => row.original.bots,
     header: 'Bots',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'country',
-    accessorKey: 'country',
+    cell: ({ row }) => row.original.country,
     header: 'Country',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'mode',
-    accessorKey: 'mode',
+    cell: ({ row }) => <Badge variant="secondary">{row.original.mode}</Badge>,
     header: 'Mode',
-    cell: ({ row }) => (
-      <Badge variant="secondary">{row.getValue('mode')}</Badge>
-    ),
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'mapId',
-    accessorKey: 'mapId',
-    header: 'Map',
     cell: ({ row }) => {
-      const lastMapId = (row.getValue('mapId') as string).split('/').pop();
+      const lastMapId = row.original.mapId.split('/').pop();
       return <Badge variant="outline">{lastMapId}</Badge>;
     },
-  },
-  {
+    header: 'Map',
+  }),
+  columnHelper.display({
     id: 'playerCount',
-    accessorKey: 'playerCount',
+    cell: ({ row }) =>
+      `${row.original.currentPlayers} / ${row.original.maxPlayers}`,
     header: 'Capacity',
-    cell: ({ row }) => {
-      const server = row.original;
-      return `${server.currentPlayers} / ${server.maxPlayers}`;
-    },
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'playerList',
-    accessorKey: 'playerList',
-    header: 'Player List',
     cell: ({ row }) => {
       const players = row.original.playerList;
       return (
@@ -73,52 +66,48 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
         </div>
       );
     },
-  },
-  {
+    header: 'Player List',
+  }),
+  columnHelper.display({
     id: 'comment',
-    accessorKey: 'comment',
+    cell: ({ row }) => row.original.comment,
     header: 'Comment',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'dedicated',
-    accessorKey: 'dedicated',
-    header: 'Dedicated',
     cell: ({ row }) => {
-      const isDedicated = row.getValue('dedicated') as boolean;
+      const isDedicated = row.original.dedicated;
       return isDedicated ? 'Yes' : 'No';
     },
-  },
-  {
+    header: 'Dedicated',
+  }),
+  columnHelper.display({
     id: 'mod',
-    accessorKey: 'mod',
-    header: 'Mod',
     cell: ({ row }) => {
       const mod = row.original.mod;
       return mod === 1 ? 'Yes' : 'No';
     },
-  },
-  {
+    header: 'Mod',
+  }),
+  columnHelper.display({
     id: 'url',
-    accessorKey: 'url',
-    header: 'URL',
     cell: ({ row }) => {
-      const url = row.getValue('url') as string;
+      const url = row.original.url;
       return (
-        <a href={url} target="_blank">
+        <a href={url || '#'} target="_blank">
           {url}
         </a>
       );
     },
-  },
-  {
+    header: 'URL',
+  }),
+  columnHelper.display({
     id: 'version',
-    accessorKey: 'version',
+    cell: ({ row }) => row.original.version,
     header: 'Version',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'timestamp',
-    accessorKey: 'timestamp',
-    header: 'Action',
     cell: ({ row }) => {
       const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} server_port=${row.original.port}`;
       return (
@@ -131,5 +120,6 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
         </div>
       );
     },
-  },
+    header: 'Action',
+  }),
 ];
