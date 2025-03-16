@@ -2,108 +2,151 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { HighlightText } from '@/components/custom/highlight-text';
 
 const columnHelper = createColumnHelper<IDisplayServerItem>();
 
 export const columns = [
-  columnHelper.display({
+  columnHelper.accessor('name', {
     id: 'name',
-    cell: ({ row }) => row.original.name,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Name',
   }),
-  columnHelper.display({
+  columnHelper.accessor('ipAddress', {
     id: 'ipAddress',
-    cell: ({ row }) => row.original.ipAddress,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'IP',
   }),
-  columnHelper.display({
+  columnHelper.accessor('port', {
     id: 'port',
-    cell: ({ row }) => row.original.port,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue().toString()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Port',
   }),
-  columnHelper.display({
+  columnHelper.accessor('bots', {
     id: 'bots',
-    cell: ({ row }) => row.original.bots,
+    cell: ({ getValue }) => getValue(),
     header: 'Bots',
   }),
-  columnHelper.display({
+  columnHelper.accessor('country', {
     id: 'country',
-    cell: ({ row }) => row.original.country,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Country',
   }),
-  columnHelper.display({
+  columnHelper.accessor('mode', {
     id: 'mode',
-    cell: ({ row }) => <Badge variant="secondary">{row.original.mode}</Badge>,
+    cell: ({ table, getValue }) => (
+      <Badge variant="secondary">
+        <HighlightText
+          text={getValue()}
+          searchQuery={table.getState().globalFilter || ''}
+        />
+      </Badge>
+    ),
     header: 'Mode',
   }),
-  columnHelper.display({
+  columnHelper.accessor('mapId', {
     id: 'mapId',
-    cell: ({ row }) => {
-      const lastMapId = row.original.mapId.split('/').pop();
-      return <Badge variant="outline">{lastMapId}</Badge>;
+    cell: ({ table, getValue }) => {
+      const lastMapId = getValue().split('/').pop() || '';
+      return (
+        <Badge variant="outline">
+          <HighlightText
+            text={lastMapId}
+            searchQuery={table.getState().globalFilter || ''}
+          />
+        </Badge>
+      );
     },
     header: 'Map',
   }),
-  columnHelper.display({
+  columnHelper.accessor((row) => `${row.currentPlayers} / ${row.maxPlayers}`, {
     id: 'playerCount',
-    cell: ({ row }) =>
-      `${row.original.currentPlayers} / ${row.original.maxPlayers}`,
     header: 'Capacity',
   }),
-  columnHelper.display({
+  columnHelper.accessor('playerList', {
     id: 'playerList',
-    cell: ({ row }) => {
-      const players = row.original.playerList;
+    cell: ({ table, getValue }) => {
+      const players = getValue();
       return (
         <div className="flex flex-wrap gap-1">
           {players
-            .filter((player) => {
-              return typeof player === 'string' && player.length > 0;
-            })
+            .filter((player) => typeof player === 'string' && player.length > 0)
             .map((player, idx) => (
-              <Badge key={idx}>{player}</Badge>
+              <Badge key={idx}>
+                <HighlightText
+                  text={player.toString()}
+                  searchQuery={table.getState().globalFilter || ''}
+                />
+              </Badge>
             ))}
         </div>
       );
     },
     header: 'Player List',
   }),
-  columnHelper.display({
+  columnHelper.accessor('comment', {
     id: 'comment',
-    cell: ({ row }) => row.original.comment,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue() || ''}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Comment',
   }),
-  columnHelper.display({
+  columnHelper.accessor('dedicated', {
     id: 'dedicated',
-    cell: ({ row }) => {
-      const isDedicated = row.original.dedicated;
-      return isDedicated ? 'Yes' : 'No';
-    },
+    cell: ({ getValue }) => (getValue() ? 'Yes' : 'No'),
     header: 'Dedicated',
   }),
-  columnHelper.display({
+  columnHelper.accessor('mod', {
     id: 'mod',
-    cell: ({ row }) => {
-      const mod = row.original.mod;
-      return mod === 1 ? 'Yes' : 'No';
-    },
+    cell: ({ getValue }) => (getValue() === 1 ? 'Yes' : 'No'),
     header: 'Mod',
   }),
-  columnHelper.display({
+  columnHelper.accessor('url', {
     id: 'url',
-    cell: ({ row }) => {
-      const url = row.original.url;
+    cell: ({ table, getValue }) => {
+      const url = getValue();
       return (
         <a href={url || '#'} target="_blank">
-          {url}
+          <HighlightText
+            text={url || ''}
+            searchQuery={table.getState().globalFilter || ''}
+          />
         </a>
       );
     },
     header: 'URL',
   }),
-  columnHelper.display({
+  columnHelper.accessor('version', {
     id: 'version',
-    cell: ({ row }) => row.original.version,
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue().toString()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Version',
   }),
   columnHelper.display({

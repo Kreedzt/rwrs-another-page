@@ -32,4 +32,5 @@ export interface ServerItemProps {
   server: IDisplayServerItem;
   expanded: boolean;
   onToggle: () => void;
+  searchQuery: string;
 }
