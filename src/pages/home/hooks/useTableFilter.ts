@@ -5,6 +5,7 @@ import { IDisplayServerItem } from '@/models/data-table.model';
 export function useTableFilter() {
   const onFuzzyFilter = useCallback<FilterFn<IDisplayServerItem>>(
     (row, _columnId, filterValue) => {
+      console.log('on filter', row, filterValue);
       // 全局搜索，检查所有相关字段
       const searchValue = filterValue.toLowerCase();
       return (

@@ -1,124 +1,156 @@
-import { ColumnDef } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { HighlightText } from '@/components/custom/highlight-text';
 
-export const columns: ColumnDef<IDisplayServerItem>[] = [
-  {
+const columnHelper = createColumnHelper<IDisplayServerItem>();
+
+export const columns = [
+  columnHelper.accessor('name', {
     id: 'name',
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    id: 'ipAddress',
-    accessorKey: 'ipAddress',
-    header: 'IP',
-  },
-  {
-    id: 'port',
-    accessorKey: 'port',
-    header: 'Port',
-  },
-  {
-    id: 'bots',
-    accessorKey: 'bots',
-    header: 'Bots',
-  },
-  {
-    id: 'country',
-    accessorKey: 'country',
-    header: 'Country',
-  },
-  {
-    id: 'mode',
-    accessorKey: 'mode',
-    header: 'Mode',
-    cell: ({ row }) => (
-      <Badge variant="secondary">{row.getValue('mode')}</Badge>
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
     ),
-  },
-  {
+    header: 'Name',
+  }),
+  columnHelper.accessor('ipAddress', {
+    id: 'ipAddress',
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
+    header: 'IP',
+  }),
+  columnHelper.accessor('port', {
+    id: 'port',
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue().toString()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
+    header: 'Port',
+  }),
+  columnHelper.accessor('bots', {
+    id: 'bots',
+    cell: ({ getValue }) => getValue(),
+    header: 'Bots',
+  }),
+  columnHelper.accessor('country', {
+    id: 'country',
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
+    header: 'Country',
+  }),
+  columnHelper.accessor('mode', {
+    id: 'mode',
+    cell: ({ table, getValue }) => (
+      <Badge variant="secondary">
+        <HighlightText
+          text={getValue()}
+          searchQuery={table.getState().globalFilter || ''}
+        />
+      </Badge>
+    ),
+    header: 'Mode',
+  }),
+  columnHelper.accessor('mapId', {
     id: 'mapId',
-    accessorKey: 'mapId',
+    cell: ({ table, getValue }) => {
+      const lastMapId = getValue().split('/').pop() || '';
+      return (
+        <Badge variant="outline">
+          <HighlightText
+            text={lastMapId}
+            searchQuery={table.getState().globalFilter || ''}
+          />
+        </Badge>
+      );
+    },
     header: 'Map',
-    cell: ({ row }) => {
-      const lastMapId = (row.getValue('mapId') as string).split('/').pop();
-      return <Badge variant="outline">{lastMapId}</Badge>;
-    },
-  },
-  {
+  }),
+  columnHelper.accessor((row) => `${row.currentPlayers} / ${row.maxPlayers}`, {
     id: 'playerCount',
-    accessorKey: 'playerCount',
     header: 'Capacity',
-    cell: ({ row }) => {
-      const server = row.original;
-      return `${server.currentPlayers} / ${server.maxPlayers}`;
-    },
-  },
-  {
+  }),
+  columnHelper.accessor('playerList', {
     id: 'playerList',
-    accessorKey: 'playerList',
-    header: 'Player List',
-    cell: ({ row }) => {
-      const players = row.original.playerList;
+    cell: ({ table, getValue }) => {
+      const players = getValue();
       return (
         <div className="flex flex-wrap gap-1">
           {players
-            .filter((player) => {
-              return typeof player === 'string' && player.length > 0;
-            })
+            .filter((player) => typeof player === 'string' && player.length > 0)
             .map((player, idx) => (
-              <Badge key={idx}>{player}</Badge>
+              <Badge key={idx}>
+                <HighlightText
+                  text={player.toString()}
+                  searchQuery={table.getState().globalFilter || ''}
+                />
+              </Badge>
             ))}
         </div>
       );
     },
-  },
-  {
+    header: 'Player List',
+  }),
+  columnHelper.accessor('comment', {
     id: 'comment',
-    accessorKey: 'comment',
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue() || ''}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Comment',
-  },
-  {
+  }),
+  columnHelper.accessor('dedicated', {
     id: 'dedicated',
-    accessorKey: 'dedicated',
+    cell: ({ getValue }) => (getValue() ? 'Yes' : 'No'),
     header: 'Dedicated',
-    cell: ({ row }) => {
-      const isDedicated = row.getValue('dedicated') as boolean;
-      return isDedicated ? 'Yes' : 'No';
-    },
-  },
-  {
+  }),
+  columnHelper.accessor('mod', {
     id: 'mod',
-    accessorKey: 'mod',
+    cell: ({ getValue }) => (getValue() === 1 ? 'Yes' : 'No'),
     header: 'Mod',
-    cell: ({ row }) => {
-      const mod = row.original.mod;
-      return mod === 1 ? 'Yes' : 'No';
-    },
-  },
-  {
+  }),
+  columnHelper.accessor('url', {
     id: 'url',
-    accessorKey: 'url',
-    header: 'URL',
-    cell: ({ row }) => {
-      const url = row.getValue('url') as string;
+    cell: ({ table, getValue }) => {
+      const url = getValue();
       return (
-        <a href={url} target="_blank">
-          {url}
+        <a href={url || '#'} target="_blank">
+          <HighlightText
+            text={url || ''}
+            searchQuery={table.getState().globalFilter || ''}
+          />
         </a>
       );
     },
-  },
-  {
+    header: 'URL',
+  }),
+  columnHelper.accessor('version', {
     id: 'version',
-    accessorKey: 'version',
+    cell: ({ table, getValue }) => (
+      <HighlightText
+        text={getValue().toString()}
+        searchQuery={table.getState().globalFilter || ''}
+      />
+    ),
     header: 'Version',
-  },
-  {
+  }),
+  columnHelper.display({
     id: 'timestamp',
-    accessorKey: 'timestamp',
-    header: 'Action',
     cell: ({ row }) => {
       const openUrl = `steam://rungameid/270150//server_address=${row.original.ipAddress} server_port=${row.original.port}`;
       return (
@@ -131,5 +163,6 @@ export const columns: ColumnDef<IDisplayServerItem>[] = [
         </div>
       );
     },
-  },
+    header: 'Action',
+  }),
 ];

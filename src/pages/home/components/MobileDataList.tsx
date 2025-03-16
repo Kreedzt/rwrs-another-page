@@ -77,6 +77,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
           server={server}
           expanded={!!expandedRows[`${server.ipAddress}:${server.port}`]}
           onToggle={() => toggleRow(`${server.ipAddress}:${server.port}`)}
+          searchQuery={searchQuery}
         />
       ))}
       {filteredData.length === 0 && (
