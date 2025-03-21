@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'preact/compat';
+import { useCallback, FC, memo } from 'preact/compat';
 import {
   ColumnDef,
   flexRender,
@@ -29,16 +29,22 @@ interface DataTableProps<TData, TValue> {
   isLoading: boolean;
 }
 
+// 使用 memo 优化 TablePagination 组件避免不必要的重新渲染
 const TablePagination: FC<{
   table: IReactTableInst<any>;
   isLoading: boolean;
-}> = ({ table }: { table: IReactTableInst<any>; isLoading: boolean }) => {
+}> = memo(({ table }: { table: IReactTableInst<any>; isLoading: boolean }) => {
   const pageIndex = table.getState().pagination.pageIndex;
   const totalPages = table.getPageCount();
   const SIBLING_COUNT = 1;
   const DOTS = 'dots';
 
   const generatePagination = useCallback(() => {
+    // 避免页码太多时的不必要计算
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i);
+    }
+    
     const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 1);
     const rightSiblingIndex = Math.min(
       pageIndex + SIBLING_COUNT,
@@ -79,6 +85,9 @@ const TablePagination: FC<{
     [table],
   );
 
+  // 如果没有多页，不显示分页组件
+  if (totalPages <= 1) return null;
+
   return (
     <Pagination>
       <PaginationContent>
@@ -95,7 +104,7 @@ const TablePagination: FC<{
               <PaginationEllipsis />
             </PaginationItem>
           ) : (
-            <PaginationItem key={`pagination-${pageIndex}-${pageNum}`}>
+            <PaginationItem key={`pagination-${index}`}>
               <PaginationLink
                 isActive={pageIndex === pageNum}
                 onClick={() => onPageChange(+pageNum)}
@@ -115,9 +124,24 @@ const TablePagination: FC<{
       </PaginationContent>
     </Pagination>
   );
-};
+});
 
-export const DataList: React.FC<DataTableProps<any, any>> = ({
+// 将表格的行组件拆分出来，使用 memo 包装以避免不必要的重新渲染
+const TableRowMemo = memo(({ row, visibleCells }: { row: any, visibleCells: any[] }) => (
+  <TableRow
+    key={row.id}
+    data-state={row.getIsSelected() && 'selected'}
+  >
+    {visibleCells.map((cell) => (
+      <TableCell key={cell.id}>
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    ))}
+  </TableRow>
+));
+
+// 优化整个 DataList 组件，使用 memo 包装
+export const DataList: React.FC<DataTableProps<any, any>> = memo(({
   table,
   columns,
   isLoading,
@@ -130,11 +154,16 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
     );
   }
 
+  // 预先计算所需数据，避免在渲染中计算
+  const headerGroups = table.getHeaderGroups();
+  const rows = table.getRowModel().rows;
+  const hasRows = rows.length > 0;
+
   return (
     <div className="w-full">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {headerGroups.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
@@ -152,19 +181,17 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+          {hasRows ? (
+            rows.map((row) => {
+              const visibleCells = row.getVisibleCells();
+              return (
+                <TableRowMemo 
+                  key={row.id} 
+                  row={row} 
+                  visibleCells={visibleCells} 
+                />
+              );
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -179,4 +206,4 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
       </div>
     </div>
   );
-};
+});
