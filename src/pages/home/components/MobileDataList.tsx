@@ -1,7 +1,14 @@
-import React, { useState, useMemo } from 'preact/compat';
+import React, { useState, useMemo, useCallback } from 'preact/compat';
 import type { MobileDataListProps } from '../types';
 import { ServerItem } from './ServerItem';
 import { TableStats } from './TableStats';
+import { IDisplayServerItem } from '@/models/data-table.model';
+import { filters } from './QuickFilterButtons';
+
+interface FilterValue {
+  searchQuery: string;
+  quickFilters: string[];
+}
 
 export const MobileDataList: React.FC<MobileDataListProps> = ({
   data,
@@ -10,50 +17,65 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
 }) => {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 
+  const filterValues = useMemo(() => {
+    return {
+      query: searchQuery.searchQuery ? searchQuery.searchQuery.toLowerCase() : '',
+      quickFilters: searchQuery.quickFilters || []
+    };
+  }, [searchQuery.searchQuery, searchQuery.quickFilters]);
+
   const filteredData = useMemo(() => {
-    if (!searchQuery) return data;
-    const query = searchQuery.toLowerCase();
+    if (!filterValues.query && filterValues.quickFilters.length === 0) return data;
+    
+    const query = filterValues.query;
+    const activeFilters = filterValues.quickFilters;
 
     return data.filter((item) => {
-      const lastMapId = item.mapId.split('/').pop();
-      if (lastMapId?.toLowerCase().includes(query.toLowerCase())) return true;
+      const passesTextSearch = !query || (() => {
+        const name = item.name.toString().toLowerCase();
+        const mode = item.mode.toLowerCase();
+        const mapId = item.mapId.toLowerCase();
+        const lastMapId = mapId.split('/').pop() || '';
+        
+        return name.includes(query) ||
+          item.ipAddress.includes(query) ||
+          item.port.toString().includes(query) ||
+          item.country.toLowerCase().includes(query) ||
+          mode.includes(query) ||
+          lastMapId.includes(query) ||
+          (item.comment?.toLowerCase().includes(query) ?? false) ||
+          (item.url?.toLowerCase().includes(query) ?? false) ||
+          item.playerList.some(
+            (player) =>
+              typeof player === 'string' &&
+              player.toLowerCase().includes(query)
+          );
+      })();
 
-      if (item.ipAddress.includes(query)) return true;
+      // If no active filters, pass filter check
+      if (activeFilters.length === 0) return passesTextSearch;
+      
+      // Apply each filter and check if the item passes any of the active filters
+      const passesQuickFilters = activeFilters.some(filterId => {
+        const filterObj = filters.find(f => f.id === filterId);
+        return filterObj ? filterObj.filter(item) : true;
+      });
 
-      if (item.country.toLowerCase().includes(query)) return true;
-
-      if (item.mode.toLowerCase().includes(query.toLowerCase())) return true;
-
-      if (item.name.toString().toLowerCase().includes(query.toLowerCase()))
-        return true;
-
-      if (
-        item.playerList.some(
-          (player) =>
-            typeof player === 'string' &&
-            player.toLowerCase().includes(query.toLowerCase()),
-        )
-      )
-        return true;
-
-      return false;
+      return passesTextSearch && passesQuickFilters;
     });
-  }, [data, searchQuery]);
+  }, [data, filterValues]);
 
-  const toggleRow = (serverId: string) => {
+  const toggleRow = useCallback((serverId: string) => {
     setExpandedRows((prev) => ({
       ...prev,
       [serverId]: !prev[serverId],
     }));
-  };
+  }, []);
 
-  const totalPlayerCount = useMemo(() => {
-    return data.reduce((acc, server) => acc + server.currentPlayers, 0);
-  }, [data]);
-
-  const filteredPlayerCount = useMemo(() => {
-    return filteredData.reduce((acc, server) => acc + server.currentPlayers, 0);
-  }, [filteredData]);
+  const { totalPlayerCount, filteredPlayerCount } = useMemo(() => ({
+    totalPlayerCount: data.reduce((acc, server) => acc + server.currentPlayers, 0),
+    filteredPlayerCount: filteredData.reduce((acc, server) => acc + server.currentPlayers, 0)
+  }), [data, filteredData]);
 
   if (isLoading) {
     return (
@@ -71,15 +93,20 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
         filteredPlayerCount={filteredPlayerCount}
         totalPlayerCount={totalPlayerCount}
       />
-      {filteredData.map((server) => (
-        <ServerItem
-          key={`${server.ipAddress}:${server.port}`}
-          server={server}
-          expanded={!!expandedRows[`${server.ipAddress}:${server.port}`]}
-          onToggle={() => toggleRow(`${server.ipAddress}:${server.port}`)}
-          searchQuery={searchQuery}
-        />
-      ))}
+      {filteredData.map((server) => {
+        const serverId = `${server.ipAddress}:${server.port}`;
+        const isExpanded = !!expandedRows[serverId];
+        
+        return (
+          <ServerItem
+            key={serverId}
+            server={server}
+            expanded={isExpanded}
+            onToggle={() => toggleRow(serverId)}
+            searchQuery={searchQuery.searchQuery}
+          />
+        );
+      })}
       {filteredData.length === 0 && (
         <div className="text-center text-muted-foreground py-8">
           No servers found

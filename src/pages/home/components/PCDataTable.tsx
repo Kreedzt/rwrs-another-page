@@ -1,4 +1,4 @@
-import React from 'preact/compat';
+import React, { useMemo, useEffect, useState } from 'preact/compat';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -12,11 +12,13 @@ import { columns } from './Columns';
 import { DataList } from './DataList';
 import { TableStats } from './TableStats';
 import { useTableFilter } from '../hooks/useTableFilter';
+import { FilterValue } from '../types';
+import { filters } from './QuickFilterButtons';
 
 interface PCDataTableProps {
   data: IDisplayServerItem[];
   isLoading: boolean;
-  searchQuery: string;
+  searchQuery: FilterValue;
   pagination: PaginationState;
   setPagination: (
     value: PaginationState | ((prev: PaginationState) => PaginationState),
@@ -38,37 +40,79 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
 }) => {
   const { onFuzzyFilter } = useTableFilter();
 
-  const table = useReactTable<IDisplayServerItem>({
-    columns,
-    data,
-    state: {
-      columnVisibility,
-      pagination,
-      globalFilter: searchQuery,
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: onFuzzyFilter,
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    autoResetPageIndex: true,
-  });
+  const filteredData = useMemo(() => {
+    if (!searchQuery.quickFilters || searchQuery.quickFilters.length === 0) {
+      return data;
+    }
 
+    return data.filter((item) => {
+      const passesQuickFilters = searchQuery.quickFilters.some((filterId) => {
+        const filterObj = filters.find((f) => f.id === filterId);
+        return filterObj ? filterObj.filter(item) : true;
+      });
+
+      return passesQuickFilters;
+    });
+  }, [data, searchQuery.quickFilters]);
+
+  // 保存表格配置信息，避免每次渲染重新创建所有配置
+  const tableConfig = useMemo(
+    () => ({
+      data: filteredData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      globalFilterFn: onFuzzyFilter,
+      onColumnVisibilityChange: setColumnVisibility,
+      onPaginationChange: setPagination,
+      autoResetPageIndex: true,
+      state: {
+        pagination,
+        columnVisibility,
+        globalFilter: searchQuery.searchQuery,
+      },
+    }),
+    [
+      data,
+      pagination,
+      columnVisibility,
+      searchQuery.searchQuery,
+      setColumnVisibility,
+      setPagination,
+      onFuzzyFilter,
+    ],
+  );
+
+  // 创建表格
+  const table = useReactTable(tableConfig);
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
+  const filteredPlayerCount = table
+    .getFilteredRowModel()
+    .rows.reduce((acc, server) => acc + server.original.currentPlayers, 0);
+
+  const { totalPlayerCount, totalCount } = useMemo(
+    () => ({
+      totalPlayerCount: data.reduce(
+        (acc, server) => acc + server.currentPlayers,
+        0,
+      ),
+      totalCount: data.length,
+    }),
+    [data, filteredData],
+  );
+
+  // 渲染界面
   return (
     <div class="hidden md:flex flex-col flex-1 overflow-auto w-full min-w-[1200px]">
       <TableStats
         className="flex gap-x-4"
-        filteredCount={table.getFilteredRowModel().rows.length}
-        totalCount={data.length}
-        filteredPlayerCount={table
-          .getFilteredRowModel()
-          .rows.reduce((acc, row) => acc + row.original.currentPlayers, 0)}
-        totalPlayerCount={data.reduce(
-          (acc, row) => acc + row.currentPlayers,
-          0,
-        )}
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+        filteredPlayerCount={filteredPlayerCount}
+        totalPlayerCount={totalPlayerCount}
       />
       <DataList isLoading={isLoading} table={table} columns={columns} />
     </div>

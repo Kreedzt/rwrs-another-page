@@ -12,7 +12,14 @@ import { PaginationState } from '@tanstack/react-table';
 const Home: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const { toast } = useToast();
-  const { searchQuery, handleSearch, handleReset } = useTableSearch();
+  const {
+    searchQuery,
+    quickFilters,
+    handleSearch,
+    handleReset,
+    handleQuickFilter,
+    getCombinedFilterValue,
+  } = useTableSearch();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -58,6 +65,13 @@ const Home: React.FC = () => {
     handleReset(setPagination, DEFAULT_PAGE_SIZE);
   }, [mutate, handleReset]);
 
+  const onQuickFilter = useCallback(
+    (filterId: string) => {
+      handleQuickFilter(filterId, setPagination, DEFAULT_PAGE_SIZE);
+    },
+    [handleQuickFilter],
+  );
+
   const onColumnToggle = useCallback((columnId: string, checked: boolean) => {
     setColumnVisibility((prev) => ({
       ...prev,
@@ -70,10 +84,12 @@ const Home: React.FC = () => {
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4">
         <TableHeader
           searchQuery={searchQuery}
+          quickFilters={quickFilters}
           isLoading={isLoading}
           onSearch={onSearch}
           onReset={onReset}
           onRefresh={onRefresh}
+          onQuickFilter={onQuickFilter}
           autoRefresh={autoRefresh}
           onAutoRefreshChange={setAutoRefresh}
           columnVisibility={columnVisibility}
@@ -83,7 +99,7 @@ const Home: React.FC = () => {
         <PCDataTable
           data={tableData}
           isLoading={isLoading}
-          searchQuery={searchQuery}
+          searchQuery={getCombinedFilterValue()}
           pagination={pagination}
           setPagination={setPagination}
           columnVisibility={columnVisibility}
@@ -93,7 +109,7 @@ const Home: React.FC = () => {
         <MobileDataList
           data={tableData}
           isLoading={isLoading}
-          searchQuery={searchQuery}
+          searchQuery={getCombinedFilterValue()}
         />
       </div>
     </div>

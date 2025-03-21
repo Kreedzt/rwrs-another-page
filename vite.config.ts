@@ -10,6 +10,8 @@ export default defineConfig({
       // use rwrs-server
       '/api': {
         target: 'http://localhost:5800',
+
+        // target: 'https://rwrs.kreedzt.cn/',
         changeOrigin: true
       }
     },
