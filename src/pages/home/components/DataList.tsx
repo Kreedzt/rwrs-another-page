@@ -33,7 +33,7 @@ interface DataTableProps<TData, TValue> {
 const TablePagination: FC<{
   table: IReactTableInst<any>;
   isLoading: boolean;
-}> = memo(({ table }: { table: IReactTableInst<any>; isLoading: boolean }) => {
+}> = ({ table }: { table: IReactTableInst<any>; isLoading: boolean }) => {
   const pageIndex = table.getState().pagination.pageIndex;
   const totalPages = table.getPageCount();
   const SIBLING_COUNT = 1;
@@ -44,7 +44,7 @@ const TablePagination: FC<{
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, i) => i);
     }
-    
+
     const leftSiblingIndex = Math.max(pageIndex - SIBLING_COUNT, 1);
     const rightSiblingIndex = Math.min(
       pageIndex + SIBLING_COUNT,
@@ -124,24 +124,27 @@ const TablePagination: FC<{
       </PaginationContent>
     </Pagination>
   );
-});
+};
 
 // 将表格的行组件拆分出来，使用 memo 包装以避免不必要的重新渲染
-const TableRowMemo = memo(({ row, visibleCells }: { row: any, visibleCells: any[] }) => (
-  <TableRow
-    key={row.id}
-    data-state={row.getIsSelected() && 'selected'}
-  >
+const TableRowMemo = ({
+  row,
+  visibleCells,
+}: {
+  row: any;
+  visibleCells: any[];
+}) => (
+  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
     {visibleCells.map((cell) => (
       <TableCell key={cell.id}>
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </TableCell>
     ))}
   </TableRow>
-));
+);
 
 // 优化整个 DataList 组件，使用 memo 包装
-export const DataList: React.FC<DataTableProps<any, any>> = memo(({
+export const DataList: React.FC<DataTableProps<any, any>> = ({
   table,
   columns,
   isLoading,
@@ -185,10 +188,10 @@ export const DataList: React.FC<DataTableProps<any, any>> = memo(({
             rows.map((row) => {
               const visibleCells = row.getVisibleCells();
               return (
-                <TableRowMemo 
-                  key={row.id} 
-                  row={row} 
-                  visibleCells={visibleCells} 
+                <TableRowMemo
+                  key={row.id}
+                  row={row}
+                  visibleCells={visibleCells}
                 />
               );
             })
@@ -206,4 +209,4 @@ export const DataList: React.FC<DataTableProps<any, any>> = memo(({
       </div>
     </div>
   );
-});
+};

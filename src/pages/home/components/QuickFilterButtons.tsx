@@ -21,7 +21,7 @@ export const filters = [
   },
   {
     id: 'ww2_invasion',
-    label: 'Offical WW2 invasion',
+    label: 'Offical WW2 Invasion',
     filter: (data: IDisplayServerItem) => {
       return data.realm === 'official_pacific';
     },

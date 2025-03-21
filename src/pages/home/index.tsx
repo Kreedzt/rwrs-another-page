@@ -96,7 +96,7 @@ const Home: React.FC = () => {
           onColumnToggle={onColumnToggle}
         />
 
-        {/* <PCDataTable
+        <PCDataTable
           data={tableData}
           isLoading={isLoading}
           searchQuery={getCombinedFilterValue()}
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
           setPagination={setPagination}
           columnVisibility={columnVisibility}
           setColumnVisibility={setColumnVisibility}
-        /> */}
+        />
 
         <MobileDataList
           data={tableData}
