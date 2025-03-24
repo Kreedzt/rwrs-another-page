@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'preact/compat';
+import React, { useMemo } from 'preact/compat';
 import {
   getCoreRowModel,
   getFilteredRowModel,
