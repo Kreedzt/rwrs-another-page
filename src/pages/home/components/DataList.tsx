@@ -1,4 +1,4 @@
-import { useCallback, FC, memo } from 'preact/compat';
+import { useCallback, FC } from 'preact/compat';
 import {
   ColumnDef,
   flexRender,
