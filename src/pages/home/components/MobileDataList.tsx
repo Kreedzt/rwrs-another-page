@@ -2,13 +2,7 @@ import React, { useState, useMemo, useCallback } from 'preact/compat';
 import type { MobileDataListProps } from '../types';
 import { ServerItem } from './ServerItem';
 import { TableStats } from './TableStats';
-import { IDisplayServerItem } from '@/models/data-table.model';
 import { filters } from './QuickFilterButtons';
-
-interface FilterValue {
-  searchQuery: string;
-  quickFilters: string[];
-}
 
 export const MobileDataList: React.FC<MobileDataListProps> = ({
   data,
@@ -19,45 +13,52 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
 
   const filterValues = useMemo(() => {
     return {
-      query: searchQuery.searchQuery ? searchQuery.searchQuery.toLowerCase() : '',
-      quickFilters: searchQuery.quickFilters || []
+      query: searchQuery.searchQuery
+        ? searchQuery.searchQuery.toLowerCase()
+        : '',
+      quickFilters: searchQuery.quickFilters || [],
     };
   }, [searchQuery.searchQuery, searchQuery.quickFilters]);
 
   const filteredData = useMemo(() => {
-    if (!filterValues.query && filterValues.quickFilters.length === 0) return data;
-    
+    if (!filterValues.query && filterValues.quickFilters.length === 0)
+      return data;
+
     const query = filterValues.query;
     const activeFilters = filterValues.quickFilters;
 
     return data.filter((item) => {
-      const passesTextSearch = !query || (() => {
-        const name = item.name.toString().toLowerCase();
-        const mode = item.mode.toLowerCase();
-        const mapId = item.mapId.toLowerCase();
-        const lastMapId = mapId.split('/').pop() || '';
-        
-        return name.includes(query) ||
-          item.ipAddress.includes(query) ||
-          item.port.toString().includes(query) ||
-          item.country.toLowerCase().includes(query) ||
-          mode.includes(query) ||
-          lastMapId.includes(query) ||
-          (item.comment?.toLowerCase().includes(query) ?? false) ||
-          (item.url?.toLowerCase().includes(query) ?? false) ||
-          item.playerList.some(
-            (player) =>
-              typeof player === 'string' &&
-              player.toLowerCase().includes(query)
+      const passesTextSearch =
+        !query ||
+        (() => {
+          const name = item.name.toString().toLowerCase();
+          const mode = item.mode.toLowerCase();
+          const mapId = item.mapId.toLowerCase();
+          const lastMapId = mapId.split('/').pop() || '';
+
+          return (
+            name.includes(query) ||
+            item.ipAddress.includes(query) ||
+            item.port.toString().includes(query) ||
+            item.country.toLowerCase().includes(query) ||
+            mode.includes(query) ||
+            lastMapId.includes(query) ||
+            (item.comment?.toLowerCase().includes(query) ?? false) ||
+            (item.url?.toLowerCase().includes(query) ?? false) ||
+            item.playerList.some(
+              (player) =>
+                typeof player === 'string' &&
+                player.toLowerCase().includes(query),
+            )
           );
-      })();
+        })();
 
       // If no active filters, pass filter check
       if (activeFilters.length === 0) return passesTextSearch;
-      
+
       // Apply each filter and check if the item passes any of the active filters
-      const passesQuickFilters = activeFilters.some(filterId => {
-        const filterObj = filters.find(f => f.id === filterId);
+      const passesQuickFilters = activeFilters.some((filterId) => {
+        const filterObj = filters.find((f) => f.id === filterId);
         return filterObj ? filterObj.filter(item) : true;
       });
 
@@ -72,10 +73,19 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
     }));
   }, []);
 
-  const { totalPlayerCount, filteredPlayerCount } = useMemo(() => ({
-    totalPlayerCount: data.reduce((acc, server) => acc + server.currentPlayers, 0),
-    filteredPlayerCount: filteredData.reduce((acc, server) => acc + server.currentPlayers, 0)
-  }), [data, filteredData]);
+  const { totalPlayerCount, filteredPlayerCount } = useMemo(
+    () => ({
+      totalPlayerCount: data.reduce(
+        (acc, server) => acc + server.currentPlayers,
+        0,
+      ),
+      filteredPlayerCount: filteredData.reduce(
+        (acc, server) => acc + server.currentPlayers,
+        0,
+      ),
+    }),
+    [data, filteredData],
+  );
 
   if (isLoading) {
     return (
@@ -86,7 +96,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
   }
 
   return (
-    <div className="flex flex-col space-y-2 p-4 md:hidden">
+    <div className="flex flex-col space-y-4 p-4 md:hidden">
       <TableStats
         filteredCount={filteredData.length}
         totalCount={data.length}
@@ -96,7 +106,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
       {filteredData.map((server) => {
         const serverId = `${server.ipAddress}:${server.port}`;
         const isExpanded = !!expandedRows[serverId];
-        
+
         return (
           <ServerItem
             key={serverId}

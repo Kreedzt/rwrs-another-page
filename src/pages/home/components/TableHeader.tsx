@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ColumnToggle } from './ColumnToggle';
 import { COLUMNS_LIST } from '../constants';
 import { QuickFilterButtons } from './QuickFilterButtons';
+import { RefreshCw } from 'lucide-react';
 
 interface TableHeaderProps {
   searchQuery: string;
@@ -70,6 +71,20 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           </div>
         </div>
       </div>
+      
+      {/* Mobile refresh button - visible only on mobile */}
+      <div className="md:hidden w-full">
+        <Button 
+          variant="outline" 
+          className="w-full" 
+          onClick={onRefresh}
+          disabled={isLoading}
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
+      </div>
+      
       <div className="w-full">
         <QuickFilterButtons
           isLoading={isLoading}

@@ -33,6 +33,7 @@ export interface MobileDataListProps {
   data: IDisplayServerItem[];
   isLoading: boolean;
   searchQuery: FilterValue;
+  onRefresh: () => void;
 }
 
 export interface ServerItemProps {

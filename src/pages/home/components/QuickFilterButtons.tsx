@@ -66,7 +66,10 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
         <Button
           key={filter.id}
           size="sm"
-          variant={activeFilter.includes(filter.id) ? 'secondary' : 'outline'}
+          variant={activeFilter.includes(filter.id) ? 'default' : 'outline'}
+          className={activeFilter.includes(filter.id) 
+            ? "font-bold border-2 border-primary shadow-sm" 
+            : ""}
           disabled={isLoading}
           onClick={() => onQuickFilter(filter.id)}
         >

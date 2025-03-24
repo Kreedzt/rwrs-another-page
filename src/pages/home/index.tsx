@@ -110,6 +110,7 @@ const Home: React.FC = () => {
           data={tableData}
           isLoading={isLoading}
           searchQuery={getCombinedFilterValue()}
+          onRefresh={onRefresh}
         />
       </div>
     </div>
