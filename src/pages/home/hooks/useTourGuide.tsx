@@ -78,7 +78,10 @@ export const useTourGuide = () => {
     [],
   );
 
-  // Function to start the PC tour
+  const updateStorageVersion = useCallback(() => {
+    localStorage.setItem(GUIDE_VERSION_KEY, APP_VERSION);
+  }, []);
+
   const startPCTour = useCallback(() => {
     const guide = driver({
       showProgress: true,
@@ -87,8 +90,7 @@ export const useTourGuide = () => {
 
     guide.drive();
 
-    // Save the current version to localStorage after showing the guide
-    localStorage.setItem(GUIDE_VERSION_KEY, APP_VERSION);
+    updateStorageVersion();
 
     return guide;
   }, [getPCGuideSteps]);
@@ -101,6 +103,8 @@ export const useTourGuide = () => {
     });
 
     guide.drive();
+
+    updateStorageVersion();
 
     return guide;
   }, [getMobileGuideSteps]);
