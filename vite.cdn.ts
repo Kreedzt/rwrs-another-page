@@ -6,17 +6,7 @@ import path from 'path';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [preact(), tailwindcss()],
-  server: {
-    proxy: {
-      // use rwrs-server
-      '/api': {
-        target: 'http://localhost:5800',
-
-        // target: 'https://rwrs.kreedzt.cn/',
-        changeOrigin: true,
-      },
-    },
-  },
+  base: 'https://assets.kreedzt.cn/rwrs-web-assets',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

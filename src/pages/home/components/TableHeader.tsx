@@ -7,6 +7,8 @@ import { ColumnToggle } from './ColumnToggle';
 import { COLUMNS_LIST } from '../constants';
 import { QuickFilterButtons } from './QuickFilterButtons';
 import { RefreshCw } from 'lucide-react';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { useTourGuide } from '../hooks/useTourGuide';
 
 interface TableHeaderProps {
   searchQuery: string;
@@ -35,11 +37,26 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   columnVisibility,
   onColumnToggle,
 }) => {
+  const { startTour } = useTourGuide();
   return (
     <div class="flex flex-col space-y-2 py-2 h-auto md:min-h-[120px]">
-      <h1 class="text-xl font-bold">RWRS Another Page</h1>
+      <h1 class="text-xl font-bold relative">
+        RWRS Another Page
+        <div className="flex items-center justify-between mb-4 absolute right-0 top-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={startTour}
+            title="Show Help Guide"
+            className="ml-2 shrink-0 bg-transparent hover:bg-transparent"
+          >
+            <QuestionMarkCircledIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+          </Button>
+        </div>
+      </h1>
       <div class="w-full flex items-center">
         <SearchInput
+          id="search-input"
           rootClassName="flex-1"
           type="text"
           value={searchQuery}
@@ -62,7 +79,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             />
             <Label className="ml-2">Auto Refresh</Label>
           </div>
-          <div className="ml-2">
+          <div className="ml-2" id="column-toggle">
             <ColumnToggle
               columnsList={COLUMNS_LIST}
               columnVisibility={columnVisibility}
@@ -71,12 +88,12 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           </div>
         </div>
       </div>
-      
+
       {/* Mobile refresh button - visible only on mobile */}
       <div className="md:hidden w-full">
-        <Button 
-          variant="outline" 
-          className="w-full" 
+        <Button
+          variant="outline"
+          className="w-full"
           onClick={onRefresh}
           disabled={isLoading}
         >
@@ -84,7 +101,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           Refresh
         </Button>
       </div>
-      
+
       <div className="w-full">
         <QuickFilterButtons
           isLoading={isLoading}

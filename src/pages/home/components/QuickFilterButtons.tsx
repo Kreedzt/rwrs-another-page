@@ -61,14 +61,14 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
   activeFilter,
 }) => {
   return (
-    <div className="flex gap-2 mt-2 flex-wrap">
+    <div className="flex gap-2 mt-2 flex-wrap" id="quick-filter-buttons">
       {filters.map((filter) => (
         <Button
           key={filter.id}
           size="sm"
           variant={activeFilter.includes(filter.id) ? 'default' : 'outline'}
           className={activeFilter.includes(filter.id) 
-            ? "font-bold border-2 border-primary shadow-sm" 
+            ? "font-bold border-2 border-primary shadow-xs" 
             : ""}
           disabled={isLoading}
           onClick={() => onQuickFilter(filter.id)}
