@@ -61,7 +61,7 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
   activeFilter,
 }) => {
   return (
-    <div className="flex gap-2 mt-2 flex-wrap">
+    <div className="flex gap-2 mt-2 flex-wrap" id="quick-filter-buttons">
       {filters.map((filter) => (
         <Button
           key={filter.id}
