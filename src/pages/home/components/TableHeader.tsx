@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ColumnToggle } from './ColumnToggle';
 import { COLUMNS_LIST } from '../constants';
 import { QuickFilterButtons } from './QuickFilterButtons';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, List, MapPin } from 'lucide-react';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useTourGuide } from '../hooks/useTourGuide';
 
@@ -22,6 +22,8 @@ interface TableHeaderProps {
   onAutoRefreshChange: (checked: boolean) => void;
   columnVisibility: Record<string, boolean>;
   onColumnToggle: (columnId: string, checked: boolean) => void;
+  viewMode: 'table' | 'map';
+  onViewModeToggle: () => void;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
@@ -36,6 +38,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onAutoRefreshChange,
   columnVisibility,
   onColumnToggle,
+  viewMode,
+  onViewModeToggle,
 }) => {
   const { startTour } = useTourGuide();
   return (
@@ -44,11 +48,20 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         RWRS Another Page
         <div className="flex items-center justify-between mb-4 absolute right-0 top-0">
           <Button
+            variant="outline"
+            size="icon"
+            onClick={onViewModeToggle}
+            title={viewMode === 'table' ? 'Switch to Map Order View' : 'Switch to Table View'}
+            className="mr-2 shrink-0"
+          >
+            {viewMode === 'table' ? <MapPin className="h-5 w-5" /> : <List className="h-5 w-5" />}
+          </Button>
+          <Button
             variant="ghost"
             size="icon"
             onClick={startTour}
             title="Show Help Guide"
-            className="ml-2 shrink-0 bg-transparent hover:bg-transparent"
+            className="shrink-0 bg-transparent hover:bg-transparent"
           >
             <QuestionMarkCircledIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </Button>
@@ -79,13 +92,15 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             />
             <Label className="ml-2">Auto Refresh</Label>
           </div>
-          <div className="ml-2" id="column-toggle">
-            <ColumnToggle
-              columnsList={COLUMNS_LIST}
-              columnVisibility={columnVisibility}
-              onColumnToggle={onColumnToggle}
-            />
-          </div>
+          {viewMode === 'table' && (
+            <div className="ml-2" id="column-toggle">
+              <ColumnToggle
+                columnsList={COLUMNS_LIST}
+                columnVisibility={columnVisibility}
+                onColumnToggle={onColumnToggle}
+              />
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,0 +1,132 @@
+{
+    "invasion": [],
+    "ww2_invasion": [],
+    "dominance": [],
+    "castling": [
+        {
+            "id": "map2_c",
+            "name": "Casake Bay"
+        },
+        {
+            "id": "map10",
+            "name": "Railroad Gap"
+        },
+        {
+            "id": "map21",
+            "name": "Hell's High Way"
+        },
+        {
+            "id": "mapxmas",
+            "name": "A Snowy Night Capriccio"
+        },
+        {
+            "id": "map20",
+            "name": "Elk Island"
+        },
+        {
+            "id": "map8",
+            "name": "Vigil Island"
+        },
+        {
+            "id": "map18",
+            "name": "Warsalt Legacy"
+        },
+        {
+            "id": "map5",
+            "name": "Corrupt lefands"
+        },
+        {
+            "id": "map16",
+            "name": "Green Coast"
+        },
+        {
+            "id": "map4_c",
+            "name": "Fridge Valley"
+        },
+        {
+            "id": "map103",
+            "name": "Palo Island"
+        },
+        {
+            "id": "map9",
+            "name": "Black Gold Estuary"
+        },
+        {
+            "id": "map13_2",
+            "name": "Holy Enclave"
+        },
+        {
+            "id": "Chapter01",
+            "name": "Awakening"
+        },
+        {
+            "id": "Chapter02",
+            "name": "Echo"
+        },
+        {
+            "id": "map14",
+            "name": "Misty Heights"
+        },
+        {
+            "id": "map106",
+            "name": "Route E30"
+        },
+        {
+            "id": "map12",
+            "name": "Operation Homecoming"
+        },
+        {
+            "id": "map17",
+            "name": "Gotcha Island"
+        },
+        {
+            "id": "map110",
+            "name": "Rising Sand"
+        },
+        {
+            "id": "map1_2",
+            "name": "Moorland Apocalypse"
+        },
+        {
+            "id": "map11",
+            "name": "Final mission I"
+        },
+        {
+            "id": "map105_1",
+            "name": "Zone Attack"
+        },
+        {
+            "id": "map105_2",
+            "name": "Shock Zone"
+        },
+        {
+            "id": "map105_3",
+            "name": "setupDeadZone"
+        },
+        {
+            "id": "map3_c",
+            "name": "Raining Fort Creek"
+        },
+        {
+            "id": "map8_2",
+            "name": "Tropical Blizzard"
+        },
+        {
+            "id": "map19",
+            "name": "Swan River"
+        },
+        {
+            "id": "mydevilsfrontline",
+            "name": "Kanda jimbocho"
+        },
+        {
+            "id": "map7",
+            "name": "Power Junction"
+        },
+        {
+            "id": "map2",
+            "name": "Keepsake Bay"
+        }
+    ],
+    "helldivers": []
+}

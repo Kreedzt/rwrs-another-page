@@ -6,11 +6,13 @@ import { TableHeader } from './components/TableHeader';
 import { useTableSearch } from './hooks/useTableSearch';
 import { MobileDataList } from './components/MobileDataList';
 import { PCDataTable } from './components/PCDataTable';
+import { MapOrderView } from './components/MapOrderView';
 import { DEFAULT_PAGE_SIZE, INITIAL_COLUMNS_VISIBILITY } from './constants';
 import { PaginationState } from '@tanstack/react-table';
 
 const Home: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
   const { toast } = useToast();
   const {
     searchQuery,
@@ -79,6 +81,10 @@ const Home: React.FC = () => {
     }));
   }, []);
 
+  const toggleViewMode = useCallback(() => {
+    setViewMode((prev) => (prev === 'table' ? 'map' : 'table'));
+  }, []);
+
   return (
     <div className="flex flex-col items-center min-h-screen">
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4">
@@ -94,24 +100,36 @@ const Home: React.FC = () => {
           onAutoRefreshChange={setAutoRefresh}
           columnVisibility={columnVisibility}
           onColumnToggle={onColumnToggle}
+          viewMode={viewMode}
+          onViewModeToggle={toggleViewMode}
         />
 
-        <PCDataTable
-          data={tableData}
-          isLoading={isLoading}
-          searchQuery={getCombinedFilterValue()}
-          pagination={pagination}
-          setPagination={setPagination}
-          columnVisibility={columnVisibility}
-          setColumnVisibility={setColumnVisibility}
-        />
+        {viewMode === 'table' ? (
+          <>
+            <PCDataTable
+              data={tableData}
+              isLoading={isLoading}
+              searchQuery={getCombinedFilterValue()}
+              pagination={pagination}
+              setPagination={setPagination}
+              columnVisibility={columnVisibility}
+              setColumnVisibility={setColumnVisibility}
+            />
 
-        <MobileDataList
-          data={tableData}
-          isLoading={isLoading}
-          searchQuery={getCombinedFilterValue()}
-          onRefresh={onRefresh}
-        />
+            <MobileDataList
+              data={tableData}
+              isLoading={isLoading}
+              searchQuery={getCombinedFilterValue()}
+              onRefresh={onRefresh}
+            />
+          </>
+        ) : (
+          <MapOrderView
+            data={tableData}
+            isLoading={isLoading}
+            activeFilter={quickFilters.length > 0 ? quickFilters[0] : 'castling'}
+          />
+        )}
       </div>
     </div>
   );
