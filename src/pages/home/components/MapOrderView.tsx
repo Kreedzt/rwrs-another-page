@@ -35,15 +35,15 @@ const ServerItem: React.FC<ServerItemProps> = ({
   return (
     <div className="pl-2 md:pl-6 mb-2">
       <div
-        className="flex items-center p-2 rounded border border-border hover:bg-accent cursor-pointer"
+        className="flex items-center p-2 rounded hover:bg-accent cursor-pointer"
         onClick={onToggle}
       >
         {expanded ? (
-          <ChevronDown className="h-4 w-4 mr-2 flex-shrink-0" />
+          <ChevronDown className="h-4 w-4 mr-2 flex-shrink-0 text-muted-foreground" />
         ) : (
-          <ChevronRight className="h-4 w-4 mr-2 flex-shrink-0" />
+          <ChevronRight className="h-4 w-4 mr-2 flex-shrink-0 text-muted-foreground" />
         )}
-        <div className="font-medium truncate">{server.name}</div>
+        <div className="font-normal text-sm text-primary/90 truncate">{server.name}</div>
         <Badge
           variant="outline"
           className="ml-2 flex-shrink-0"
@@ -51,7 +51,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
       </div>
 
       {expanded && (
-        <div className="p-3 pl-4 md:pl-6 ml-2 mt-1 border border-border rounded bg-card">
+        <div className="p-3 pl-4 md:pl-6 ml-2 mt-1 rounded bg-card/50">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="text-sm">
               <span className="text-muted-foreground">IP:</span>{' '}
@@ -159,15 +159,21 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
       {maps.length === 0 ? (
         <div className="text-center p-4">No maps found for this filter.</div>
       ) : (
-        <div className="space-y-4 px-2 md:px-0">
+        <div className="space-y-4 px-2 md:px-0 border rounded-md p-3">
           {maps.map((map: MapItem) => (
-            <div key={map.id} className="border rounded-md p-3">
-              <div className="text-lg font-medium mb-2 flex flex-wrap items-center">
-                <span className="mr-2">{map.name}</span>
+            <div key={map.id} className="mb-4 last:mb-0 px-4">
+              <div className="text-xl font-semibold mb-3 flex flex-wrap items-center border-b pb-2">
+                <span className="mr-2 text-primary">{map.name}</span>
+                <Badge 
+                  variant="secondary" 
+                  className="mr-2 font-normal text-xs"
+                >
+                  {serversByMap[map.id]?.length || 0} servers
+                </Badge>
                 <span className="text-xs text-muted-foreground">{map.id}</span>
               </div>
 
-              {serversByMap[map.id] && serversByMap[map.id].length > 0 ? (
+              {serversByMap[map.id] && serversByMap[map.id].length > 0 && (
                 serversByMap[map.id].map((server) => (
                   <ServerItem
                     key={`${server.ipAddress}:${server.port}`}
@@ -180,10 +186,6 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                     }
                   />
                 ))
-              ) : (
-                <div className="text-sm text-muted-foreground pl-2 md:pl-6">
-                  No servers playing this map
-                </div>
               )}
             </div>
           ))}
