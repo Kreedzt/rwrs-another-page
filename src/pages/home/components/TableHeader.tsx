@@ -24,6 +24,8 @@ interface TableHeaderProps {
   onColumnToggle: (columnId: string, checked: boolean) => void;
   viewMode: 'table' | 'map';
   onViewModeToggle: () => void;
+  isMultiSelect: boolean;
+  onMultiSelectChange: (checked: boolean) => void;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
@@ -40,6 +42,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onColumnToggle,
   viewMode,
   onViewModeToggle,
+  isMultiSelect,
+  onMultiSelectChange,
 }) => {
   const { startTour } = useTourGuide();
   return (
@@ -122,6 +126,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           isLoading={isLoading}
           onQuickFilter={onQuickFilter}
           activeFilter={quickFilters}
+          isMultiSelect={isMultiSelect}
+          onMultiSelectChange={onMultiSelectChange}
         />
       </div>
     </div>

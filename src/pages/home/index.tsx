@@ -17,10 +17,14 @@ const Home: React.FC = () => {
   const {
     searchQuery,
     quickFilters,
+    isMultiSelect,
+    setSearchQuery,
     handleSearch,
     handleReset,
     handleQuickFilter,
-    getCombinedFilterValue,
+    handleMultiSelectChange,
+    updateSearchParams,
+    getCombinedFilterValue
   } = useTableSearch();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -102,6 +106,8 @@ const Home: React.FC = () => {
           onColumnToggle={onColumnToggle}
           viewMode={viewMode}
           onViewModeToggle={toggleViewMode}
+          isMultiSelect={isMultiSelect}
+          onMultiSelectChange={handleMultiSelectChange}
         />
 
         {viewMode === 'table' ? (
