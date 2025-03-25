@@ -128,6 +128,7 @@ const Home: React.FC = () => {
             data={tableData}
             isLoading={isLoading}
             activeFilters={quickFilters}
+            searchQuery={getCombinedFilterValue().searchQuery}
           />
         )}
       </div>

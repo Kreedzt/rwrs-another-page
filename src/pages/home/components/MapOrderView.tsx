@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { filters } from './QuickFilterButtons';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { HighlightText } from '@/components/custom/highlight-text';
 
 // Import the maps data directly
 import mapsData from '../../../../public/maps.json';
@@ -13,12 +13,14 @@ interface MapOrderViewProps {
   data: IDisplayServerItem[];
   isLoading: boolean;
   activeFilters: string[];
+  searchQuery?: string;
 }
 
 interface ServerItemProps {
   server: IDisplayServerItem;
   expanded: boolean;
   onToggle: () => void;
+  searchQuery?: string;
 }
 
 interface MapItem {
@@ -33,27 +35,59 @@ const ServerItem: React.FC<ServerItemProps> = ({
   server,
   expanded,
   onToggle,
+  searchQuery,
 }) => {
   const handleJoin = () => {
     window.open(`steam://connect/${server.ipAddress}:${server.port}`, '_blank');
   };
 
+  // Ensure text values are strings
+  const serverName = String(server.name || '');
+  const serverMode = String(server.mode || '');
+  const serverCountry = String(server.country || '');
+  const serverVersion = String(server.version || '');
+  const serverUrl = String(server.url || '');
+  const serverComment = String(server.comment || '');
+
   return (
-    <div className="border rounded-lg p-4 bg-card mb-2">
+    <div className="bg-card/50 rounded-lg p-4 hover:bg-accent/5 transition-colors">
       <div
-        className="flex justify-between items-center cursor-pointer"
+        className="flex justify-between items-start cursor-pointer"
         onClick={onToggle}
       >
-        <div className="flex flex-col">
-          <h3 className="font-medium text-primary/90">{server.name}</h3>
-          <div className="flex gap-2 mt-1">
-            <Badge variant="secondary">{server.mode}</Badge>
-            <span className="text-muted-foreground">
-              {server.currentPlayers} / {server.maxPlayers}
-            </span>
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium text-primary/90">
+              <HighlightText
+                text={serverName}
+                searchQuery={searchQuery || ''}
+              />
+            </h3>
+            <Badge variant="outline" className="font-normal">
+              {server.currentPlayers}/{server.maxPlayers}
+            </Badge>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary" className="font-normal">
+              <HighlightText
+                text={serverMode}
+                searchQuery={searchQuery || ''}
+              />
+            </Badge>
+            <Badge variant="outline" className="font-normal">
+              <HighlightText
+                text={serverCountry}
+                searchQuery={searchQuery || ''}
+              />
+            </Badge>
+            {server.bots > 0 && (
+              <Badge variant="outline" className="font-normal">
+                {server.bots} Bots
+              </Badge>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-4">
           <Button
             variant="outline"
             size="sm"
@@ -74,32 +108,89 @@ const ServerItem: React.FC<ServerItemProps> = ({
       </div>
 
       {expanded && (
-        <div className="mt-4 space-y-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div>
-              <span className="text-sm text-muted-foreground">IP: </span>
-              {server.ipAddress}:{server.port}
-            </div>
-            <div>
-              <span className="text-sm text-muted-foreground">Country: </span>
-              {server.country}
-            </div>
-            <div>
-              <span className="text-sm text-muted-foreground">Mode: </span>
-              {server.mode}
-            </div>
-            <div>
-              <span className="text-sm text-muted-foreground">Bots: </span>
-              {server.bots}
-            </div>
-            {server.mapName && (
-              <div className="md:col-span-2">
-                <span className="text-sm text-muted-foreground">Map: </span>
-                {server.mapName}
+        <div className="mt-4 space-y-4 pt-4 border-t border-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Connection</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={handleJoin}
+                >
+                  <HighlightText
+                    text={`${server.ipAddress}:${server.port}`}
+                    searchQuery={searchQuery || ''}
+                  />
+                </Button>
               </div>
-            )}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Version</span>
+                <span className="text-sm text-muted-foreground">
+                  <HighlightText
+                    text={serverVersion}
+                    searchQuery={searchQuery || ''}
+                  />
+                </span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {server.url && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Website</span>
+                  <a
+                    href={server.url}
+                    target="_blank"
+                    className="text-sm text-blue-500 hover:underline truncate"
+                  >
+                    <HighlightText
+                      text={serverUrl}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </a>
+                </div>
+              )}
+              {server.comment && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Comment</span>
+                  <span className="text-sm text-muted-foreground">
+                    <HighlightText
+                      text={serverComment}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="md:hidden mt-2">
+
+          {server.playerList.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Players</span>
+                <span className="text-sm text-muted-foreground">
+                  {server.playerList.length} online
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {server.playerList.map((player) => (
+                  <Badge
+                    key={player}
+                    variant="secondary"
+                    className="font-normal text-xs"
+                  >
+                    <HighlightText
+                      text={String(player || '')}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="md:hidden">
             <Button
               variant="outline"
               size="sm"
@@ -119,6 +210,7 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
   data,
   isLoading,
   activeFilters,
+  searchQuery,
 }) => {
   const [expandedServers, setExpandedServers] = useState<
     Record<string, boolean>
@@ -126,20 +218,16 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
 
   // Get maps for all active filters
   const allMaps = useMemo(() => {
-    console.log('activeFilters', activeFilters);
     if (activeFilters.length === 0) {
-      // If no filters selected, return all maps from all categories
       return Object.values(mapData).flat();
     }
 
-    // Get unique maps from all active filters
     const mapsSet = new Set<string>();
     const mapsArray: MapItem[] = [];
 
     activeFilters.forEach((filterId) => {
       const filterMaps = mapData[filterId as keyof typeof mapData] || [];
       filterMaps.forEach((map) => {
-        // Use map.id as unique identifier
         if (!mapsSet.has(map.id)) {
           mapsSet.add(map.id);
           mapsArray.push(map);
@@ -150,20 +238,47 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
     return mapsArray;
   }, [activeFilters]);
 
-  // Filter servers based on active filters
+  // Filter servers based on search query and active filters
   const filteredServers = useMemo(() => {
-    if (activeFilters.length === 0) return data;
+    return data.filter((item) => {
+      // Text search logic
+      const passesTextSearch =
+        !searchQuery ||
+        (() => {
+          const query = searchQuery.toLowerCase();
+          const name = item.name.toString().toLowerCase();
+          const mode = item.mode.toLowerCase();
+          const mapId = item.mapId.toLowerCase();
+          const lastMapId = mapId.split('/').pop() || '';
 
-    // Get union of servers matching any of the active filters
-    return data.filter((server) => {
-      return activeFilters.some((filterId) => {
-        const filterObj = filters.find((f) => f.id === filterId);
-        return filterObj ? filterObj.filter(server) : false;
-      });
+          return (
+            name.includes(query) ||
+            item.ipAddress.includes(query) ||
+            item.port.toString().includes(query) ||
+            item.country.toLowerCase().includes(query) ||
+            mode.includes(query) ||
+            lastMapId.includes(query) ||
+            (item.comment?.toLowerCase().includes(query) ?? false) ||
+            (item.url?.toLowerCase().includes(query) ?? false) ||
+            item.playerList.some(
+              (player) =>
+                typeof player === 'string' &&
+                player.toLowerCase().includes(query),
+            )
+          );
+        })();
+
+      // Quick filters logic
+      const passesQuickFilters =
+        activeFilters.length === 0 ||
+        activeFilters.some((filterId) => {
+          const filterObj = filters.find((f) => f.id === filterId);
+          return filterObj ? filterObj.filter(item) : true;
+        });
+
+      return passesTextSearch && passesQuickFilters;
     });
-  }, [data, activeFilters]);
-
-  console.log('filteredServers', filteredServers);
+  }, [data, searchQuery, activeFilters]);
 
   // Group servers by map name
   const serversByMap = useMemo(() => {
@@ -183,9 +298,21 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
       }
     });
 
-    console.log('result', result);
+    // Sort maps by server count (most servers first) and then alphabetically
+    const sortedMaps = [...allMaps].sort((a, b) => {
+      const aCount = result[a.id]?.length || 0;
+      const bCount = result[b.id]?.length || 0;
+      if (bCount !== aCount) {
+        return bCount - aCount;
+      }
+      // If server counts are equal, sort alphabetically by map name
+      return a.name.localeCompare(b.name);
+    });
 
-    return result;
+    return {
+      serversByMap: result,
+      sortedMaps,
+    };
   }, [filteredServers, allMaps]);
 
   const toggleServerExpand = (serverId: string) => {
@@ -222,33 +349,57 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
           No maps found for selected filters.
         </div>
       ) : (
-        <div className="space-y-4 px-2 md:px-0 border rounded-md p-3">
-          {allMaps.map((map: MapItem) => (
-            <div key={map.id} className="mb-4 last:mb-0 px-4">
-              <div className="text-xl font-semibold mb-3 flex flex-wrap items-center border-b pb-2">
-                <span className="mr-2 text-primary">{map.name}</span>
-                <Badge variant="secondary" className="mr-2 font-normal text-xs">
-                  {serversByMap[map.id]?.length || 0} servers
-                </Badge>
-                <span className="text-xs text-muted-foreground">{map.id}</span>
-              </div>
+        <div className="space-y-6 px-2 md:px-0">
+          {serversByMap.sortedMaps.map((map: MapItem) => {
+            const servers = serversByMap.serversByMap[map.id] || [];
 
-              {serversByMap[map.id] &&
-                serversByMap[map.id].length > 0 &&
-                serversByMap[map.id].map((server) => (
-                  <ServerItem
-                    key={`${server.ipAddress}:${server.port}`}
-                    server={server}
-                    expanded={
-                      !!expandedServers[`${server.ipAddress}:${server.port}`]
-                    }
-                    onToggle={() =>
-                      toggleServerExpand(`${server.ipAddress}:${server.port}`)
-                    }
-                  />
-                ))}
-            </div>
-          ))}
+            return (
+              <div key={map.id} className="mb-6 last:mb-0">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="text-lg font-medium text-primary">
+                    <HighlightText
+                      text={String(map.id || '')}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </span>
+                  <Badge
+                    variant={servers.length > 0 ? 'secondary' : 'outline'}
+                    className="font-normal text-xs"
+                  >
+                    {servers.length} servers
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    <HighlightText
+                      text={String(map.name || '')}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </span>
+                </div>
+
+                {servers.length > 0 && (
+                  <div className="space-y-2">
+                    {servers.map((server) => (
+                      <ServerItem
+                        key={`${server.ipAddress}:${server.port}`}
+                        server={server}
+                        expanded={
+                          !!expandedServers[
+                            `${server.ipAddress}:${server.port}`
+                          ]
+                        }
+                        onToggle={() =>
+                          toggleServerExpand(
+                            `${server.ipAddress}:${server.port}`,
+                          )
+                        }
+                        searchQuery={searchQuery}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
