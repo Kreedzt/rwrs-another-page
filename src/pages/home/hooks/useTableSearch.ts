@@ -12,12 +12,17 @@ export const getInitialQuickFilters = () => {
   return filterParam ? filterParam.split(',') : [];
 };
 
+export const getInitialViewMode = () => {
+  const params = new URLSearchParams(window.location.search);
+  return (params.get('viewMode') as 'table' | 'map') || 'table';
+};
+
 export function useTableSearch() {
   const [searchQuery, setSearchQuery] = useState(getInitialSearchQuery());
   const [quickFilters, setQuickFilters] = useState<string[]>(getInitialQuickFilters());
   const [isMultiSelect, setIsMultiSelect] = useState(false);
 
-  const updateSearchParams = useCallback((query: string, filters: string[]) => {
+  const updateSearchParams = useCallback((query: string, filters: string[], viewMode?: 'table' | 'map') => {
     const params = new URLSearchParams(window.location.search);
     if (query) {
       params.set('search', query);
@@ -29,6 +34,10 @@ export function useTableSearch() {
       params.set('quickFilters', filters.join(','));
     } else {
       params.delete('quickFilters');
+    }
+
+    if (viewMode) {
+      params.set('viewMode', viewMode);
     }
     
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;

@@ -5,8 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { filters } from './QuickFilterButtons';
 import { Button } from '@/components/ui/button';
 import { HighlightText } from '@/components/custom/highlight-text';
-
-// Import the maps data directly
 import mapsData from '../../../../public/maps.json';
 
 interface MapOrderViewProps {
@@ -37,9 +35,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
   onToggle,
   searchQuery,
 }) => {
-  const handleJoin = () => {
-    window.open(`steam://connect/${server.ipAddress}:${server.port}`, '_blank');
-  };
+  const openUrl = `steam://rungameid/270150//server_address=${server.ipAddress} server_port=${server.port}`;
 
   // Ensure text values are strings
   const serverName = String(server.name || '');
@@ -88,17 +84,11 @@ const ServerItem: React.FC<ServerItemProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2 ml-4">
-          <Button
-            variant="outline"
-            size="sm"
-            className="hidden md:flex"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleJoin();
-            }}
-          >
-            Join
-          </Button>
+          <a href={openUrl} target="_blank">
+            <Button variant="outline" size="sm" className="hidden md:flex">
+              Join
+            </Button>
+          </a>
           {expanded ? (
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           ) : (
@@ -112,7 +102,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Connection</span>
+                <span className="text-sm font-medium">IP:Port</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -138,7 +128,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
             <div className="space-y-2">
               {server.url && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Website</span>
+                  <span className="text-sm font-medium">URL</span>
                   <a
                     href={server.url}
                     target="_blank"
@@ -165,14 +155,14 @@ const ServerItem: React.FC<ServerItemProps> = ({
             </div>
           </div>
 
-          {server.playerList.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Players</span>
-                <span className="text-sm text-muted-foreground">
-                  {server.playerList.length} online
-                </span>
-              </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Players</span>
+              <span className="text-sm text-muted-foreground">
+                {server.playerList.length} online
+              </span>
+            </div>
+            {server.playerList.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {server.playerList.map((player) => (
                   <Badge
@@ -187,8 +177,12 @@ const ServerItem: React.FC<ServerItemProps> = ({
                   </Badge>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                No players online
+              </div>
+            )}
+          </div>
 
           <div className="md:hidden">
             <Button

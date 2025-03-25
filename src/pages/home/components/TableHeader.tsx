@@ -52,15 +52,25 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         RWRS Another Page
         <div className="flex items-center justify-between mb-4 absolute right-0 top-0">
           <Button
+            id="view-mode-toggle"
             variant="outline"
             size="icon"
             onClick={onViewModeToggle}
-            title={viewMode === 'table' ? 'Switch to Map Order View' : 'Switch to Table View'}
+            title={
+              viewMode === 'table'
+                ? 'Switch to Map Order View'
+                : 'Switch to Table View'
+            }
             className="mr-2 shrink-0"
           >
-            {viewMode === 'table' ? <MapPin className="h-5 w-5" /> : <List className="h-5 w-5" />}
+            {viewMode === 'table' ? (
+              <MapPin className="h-5 w-5" />
+            ) : (
+              <List className="h-5 w-5" />
+            )}
           </Button>
           <Button
+            id="help-guide-toggle"
             variant="ghost"
             size="icon"
             onClick={startTour}

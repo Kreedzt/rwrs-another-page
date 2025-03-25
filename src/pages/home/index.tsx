@@ -9,22 +9,24 @@ import { PCDataTable } from './components/PCDataTable';
 import { MapOrderView } from './components/MapOrderView';
 import { DEFAULT_PAGE_SIZE, INITIAL_COLUMNS_VISIBILITY } from './constants';
 import { PaginationState } from '@tanstack/react-table';
+import { getInitialViewMode } from './hooks/useTableSearch';
 
 const Home: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'map'>(
+    getInitialViewMode(),
+  );
   const { toast } = useToast();
   const {
     searchQuery,
     quickFilters,
     isMultiSelect,
-    setSearchQuery,
     handleSearch,
     handleReset,
     handleQuickFilter,
     handleMultiSelectChange,
     updateSearchParams,
-    getCombinedFilterValue
+    getCombinedFilterValue,
   } = useTableSearch();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -86,8 +88,12 @@ const Home: React.FC = () => {
   }, []);
 
   const toggleViewMode = useCallback(() => {
-    setViewMode((prev) => (prev === 'table' ? 'map' : 'table'));
-  }, []);
+    setViewMode((prev) => {
+      const newMode = prev === 'table' ? 'map' : 'table';
+      updateSearchParams(searchQuery, quickFilters, newMode);
+      return newMode;
+    });
+  }, [searchQuery, quickFilters, updateSearchParams]);
 
   return (
     <div className="flex flex-col items-center min-h-screen">

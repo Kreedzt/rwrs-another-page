@@ -3,7 +3,7 @@ import { driver, DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
 // App version - update this when you want to show the guide again
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const GUIDE_VERSION_KEY = 'app_guide_version';
 const PC_MIN_WIDTH = 768; // Minimum width to be considered a PC display
 
@@ -38,13 +38,23 @@ export const useTourGuide = () => {
         },
       },
       {
-        element: '#quick-filter-buttons',
+        element: '#view-mode-toggle',
         popover: {
-          title: 'Quick Filters',
+          title: 'View Mode Toggle',
           description:
-            'Apply filters to quickly find servers matching specific criteria. You can use multiple filters together and combine them with the search box for powerful queries!',
-          side: 'right' as const,
-          align: 'start',
+            'Switch between list and map view modes to find servers in your preferred way. List view provides detailed information in a table format, while map view offers a geographical perspective.',
+          side: 'left' as const,
+          align: 'center',
+        },
+      },
+      {
+        element: '#help-guide-toggle',
+        popover: {
+          title: 'Help Guide',
+          description:
+            'Click this button anytime to replay the help guide and refresh your memory about the available features.',
+          side: 'left' as const,
+          align: 'center',
         },
       },
     ],
@@ -70,6 +80,26 @@ export const useTourGuide = () => {
           title: 'Quick Filters',
           description:
             'Apply filters to quickly find servers matching specific criteria. You can use multiple filters together and combine them with the search box for powerful queries!',
+          side: 'bottom' as const,
+          align: 'center',
+        },
+      },
+      {
+        element: '#view-mode-toggle',
+        popover: {
+          title: 'View Mode Toggle',
+          description:
+            'Switch between list and map view modes to find servers in your preferred way. List view provides detailed information in a table format, while map view offers a geographical perspective.',
+          side: 'bottom' as const,
+          align: 'center',
+        },
+      },
+      {
+        element: '#help-guide-toggle',
+        popover: {
+          title: 'Help Guide',
+          description:
+            'Click this button anytime to replay the help guide and refresh your memory about the available features.',
           side: 'bottom' as const,
           align: 'center',
         },
