@@ -127,7 +127,7 @@ const Home: React.FC = () => {
           <MapOrderView
             data={tableData}
             isLoading={isLoading}
-            activeFilter={quickFilters.length > 0 ? quickFilters[0] : 'castling'}
+            activeFilters={quickFilters}
           />
         )}
       </div>
