@@ -48,9 +48,9 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   const { startTour } = useTourGuide();
   return (
     <div class="flex flex-col space-y-2 py-2 h-auto md:min-h-[120px]">
-      <h1 class="text-xl font-bold relative">
-        RWRS Another Page
-        <div className="flex items-center justify-between mb-4 absolute right-0 top-0">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold truncate mr-4">RWRS Another Page</h1>
+        <div className="flex items-center shrink-0">
           <Button
             id="view-mode-toggle"
             variant="outline"
@@ -61,7 +61,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                 ? 'Switch to Map Order View'
                 : 'Switch to Table View'
             }
-            className="mr-2 shrink-0"
+            className="mr-2"
           >
             {viewMode === 'table' ? (
               <MapPin className="h-5 w-5" />
@@ -75,12 +75,12 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             size="icon"
             onClick={startTour}
             title="Show Help Guide"
-            className="shrink-0 bg-transparent hover:bg-transparent"
+            className="bg-transparent hover:bg-transparent"
           >
             <QuestionMarkCircledIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </Button>
         </div>
-      </h1>
+      </div>
       <div class="w-full flex items-center">
         <SearchInput
           id="search-input"

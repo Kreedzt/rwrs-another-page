@@ -338,7 +338,16 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
         Map Order: {filterNames || 'All Maps'}
       </div>
 
-      {allMaps.length === 0 ? (
+      {activeFilters.length === 0 ? (
+        <div className="text-center p-8 space-y-4">
+          <div className="text-lg text-muted-foreground">
+            Select Quick Filters to View Map Order
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Choose your preferred map categories in Quick Filters to display the corresponding server list
+          </div>
+        </div>
+      ) : allMaps.length === 0 ? (
         <div className="text-center p-4">
           No maps found for selected filters.
         </div>
