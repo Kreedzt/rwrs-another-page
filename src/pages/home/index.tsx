@@ -6,18 +6,26 @@ import { TableHeader } from './components/TableHeader';
 import { useTableSearch } from './hooks/useTableSearch';
 import { MobileDataList } from './components/MobileDataList';
 import { PCDataTable } from './components/PCDataTable';
+import { MapOrderView } from './components/MapOrderView';
 import { DEFAULT_PAGE_SIZE, INITIAL_COLUMNS_VISIBILITY } from './constants';
 import { PaginationState } from '@tanstack/react-table';
+import { getInitialViewMode } from './hooks/useTableSearch';
 
 const Home: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'map'>(
+    getInitialViewMode(),
+  );
   const { toast } = useToast();
   const {
     searchQuery,
     quickFilters,
+    isMultiSelect,
     handleSearch,
     handleReset,
     handleQuickFilter,
+    handleMultiSelectChange,
+    updateSearchParams,
     getCombinedFilterValue,
   } = useTableSearch();
   const [pagination, setPagination] = useState<PaginationState>({
@@ -79,6 +87,14 @@ const Home: React.FC = () => {
     }));
   }, []);
 
+  const toggleViewMode = useCallback(() => {
+    setViewMode((prev) => {
+      const newMode = prev === 'table' ? 'map' : 'table';
+      updateSearchParams(searchQuery, quickFilters, newMode);
+      return newMode;
+    });
+  }, [searchQuery, quickFilters, updateSearchParams]);
+
   return (
     <div className="flex flex-col items-center min-h-screen">
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4">
@@ -94,24 +110,39 @@ const Home: React.FC = () => {
           onAutoRefreshChange={setAutoRefresh}
           columnVisibility={columnVisibility}
           onColumnToggle={onColumnToggle}
+          viewMode={viewMode}
+          onViewModeToggle={toggleViewMode}
+          isMultiSelect={isMultiSelect}
+          onMultiSelectChange={handleMultiSelectChange}
         />
 
-        <PCDataTable
-          data={tableData}
-          isLoading={isLoading}
-          searchQuery={getCombinedFilterValue()}
-          pagination={pagination}
-          setPagination={setPagination}
-          columnVisibility={columnVisibility}
-          setColumnVisibility={setColumnVisibility}
-        />
+        {viewMode === 'table' ? (
+          <>
+            <PCDataTable
+              data={tableData}
+              isLoading={isLoading}
+              searchQuery={getCombinedFilterValue()}
+              pagination={pagination}
+              setPagination={setPagination}
+              columnVisibility={columnVisibility}
+              setColumnVisibility={setColumnVisibility}
+            />
 
-        <MobileDataList
-          data={tableData}
-          isLoading={isLoading}
-          searchQuery={getCombinedFilterValue()}
-          onRefresh={onRefresh}
-        />
+            <MobileDataList
+              data={tableData}
+              isLoading={isLoading}
+              searchQuery={getCombinedFilterValue()}
+              onRefresh={onRefresh}
+            />
+          </>
+        ) : (
+          <MapOrderView
+            data={tableData}
+            isLoading={isLoading}
+            activeFilters={quickFilters}
+            searchQuery={getCombinedFilterValue().searchQuery}
+          />
+        )}
       </div>
     </div>
   );

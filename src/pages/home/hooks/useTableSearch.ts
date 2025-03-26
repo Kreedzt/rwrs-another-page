@@ -12,11 +12,17 @@ export const getInitialQuickFilters = () => {
   return filterParam ? filterParam.split(',') : [];
 };
 
+export const getInitialViewMode = () => {
+  const params = new URLSearchParams(window.location.search);
+  return (params.get('viewMode') as 'table' | 'map') || 'table';
+};
+
 export function useTableSearch() {
   const [searchQuery, setSearchQuery] = useState(getInitialSearchQuery());
   const [quickFilters, setQuickFilters] = useState<string[]>(getInitialQuickFilters());
+  const [isMultiSelect, setIsMultiSelect] = useState(false);
 
-  const updateSearchParams = useCallback((query: string, filters: string[]) => {
+  const updateSearchParams = useCallback((query: string, filters: string[], viewMode?: 'table' | 'map') => {
     const params = new URLSearchParams(window.location.search);
     if (query) {
       params.set('search', query);
@@ -28,6 +34,10 @@ export function useTableSearch() {
       params.set('quickFilters', filters.join(','));
     } else {
       params.delete('quickFilters');
+    }
+
+    if (viewMode) {
+      params.set('viewMode', viewMode);
     }
     
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
@@ -67,10 +77,17 @@ export function useTableSearch() {
     setPagination: (value: PaginationState | ((prev: PaginationState) => PaginationState)) => void,
     pageSize: number
   ) => {
-    // Toggle the filter - add if not present, remove if present
-    const newFilters = quickFilters.includes(filterId)
-      ? quickFilters.filter(id => id !== filterId)
-      : [...quickFilters, filterId];
+    let newFilters: string[];
+    
+    if (isMultiSelect) {
+      // 多选模式：切换选中状态
+      newFilters = quickFilters.includes(filterId)
+        ? quickFilters.filter(id => id !== filterId)
+        : [...quickFilters, filterId];
+    } else {
+      // 单选模式：直接替换
+      newFilters = quickFilters.includes(filterId) ? [] : [filterId];
+    }
     
     setQuickFilters(newFilters);
     updateSearchParams(searchQuery, newFilters);
@@ -79,6 +96,16 @@ export function useTableSearch() {
       pageIndex: 0,
       pageSize,
     });
+  }, [quickFilters, searchQuery, updateSearchParams, isMultiSelect]);
+
+  const handleMultiSelectChange = useCallback((checked: boolean) => {
+    setIsMultiSelect(checked);
+    // 切换到单选模式时，如果当前有多个选中项，只保留最后一个
+    if (!checked && quickFilters.length > 1) {
+      const lastFilter = quickFilters[quickFilters.length - 1];
+      setQuickFilters([lastFilter]);
+      updateSearchParams(searchQuery, [lastFilter]);
+    }
   }, [quickFilters, searchQuery, updateSearchParams]);
 
   const getCombinedFilterValue = useCallback(() => {
@@ -91,10 +118,12 @@ export function useTableSearch() {
   return {
     searchQuery,
     quickFilters,
+    isMultiSelect,
     setSearchQuery,
     handleSearch,
     handleReset,
     handleQuickFilter,
+    handleMultiSelectChange,
     updateSearchParams,
     getCombinedFilterValue
   };

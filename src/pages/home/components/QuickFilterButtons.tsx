@@ -1,11 +1,15 @@
 import React from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { IDisplayServerItem } from '@/models/data-table.model';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface QuickFilterButtonsProps {
   isLoading: boolean;
   onQuickFilter: (query: string) => void;
   activeFilter: string[];
+  isMultiSelect: boolean;
+  onMultiSelectChange: (checked: boolean) => void;
 }
 
 const CASTLING_REGEX = /^\[Castling](\[Global])?\[[\w!\\?]+(-\d)?\s(LV\d|FOV)]/;
@@ -59,23 +63,37 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
   isLoading,
   onQuickFilter,
   activeFilter,
+  isMultiSelect,
+  onMultiSelectChange,
 }) => {
   return (
-    <div className="flex gap-2 mt-2 flex-wrap" id="quick-filter-buttons">
-      {filters.map((filter) => (
-        <Button
-          key={filter.id}
-          size="sm"
-          variant={activeFilter.includes(filter.id) ? 'default' : 'outline'}
-          className={activeFilter.includes(filter.id) 
-            ? "font-bold border-2 border-primary shadow-xs" 
-            : ""}
+    <div className="flex flex-col gap-2 mt-2">
+      <div className="flex items-center gap-2">
+        <Switch
+          checked={isMultiSelect}
+          onCheckedChange={onMultiSelectChange}
           disabled={isLoading}
-          onClick={() => onQuickFilter(filter.id)}
-        >
-          {filter.label}
-        </Button>
-      ))}
+        />
+        <Label className="text-sm">Multiple Select</Label>
+      </div>
+      <div className="flex gap-2 flex-wrap" id="quick-filter-buttons">
+        {filters.map((filter) => (
+          <Button
+            key={filter.id}
+            size="sm"
+            variant={activeFilter.includes(filter.id) ? 'default' : 'outline'}
+            className={
+              activeFilter.includes(filter.id)
+                ? 'font-bold border-2 border-primary shadow-xs'
+                : ''
+            }
+            disabled={isLoading}
+            onClick={() => onQuickFilter(filter.id)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 };
