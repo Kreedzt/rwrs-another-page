@@ -46,38 +46,38 @@ const ServerItem: React.FC<ServerItemProps> = ({
   const serverComment = String(server.comment || '');
 
   return (
-    <div className="bg-card/50 rounded-lg p-4 hover:bg-accent/5 transition-colors">
+    <div className="bg-card/50 rounded-lg p-3 hover:bg-accent/5 transition-colors">
       <div
         className="flex justify-between items-start cursor-pointer"
         onClick={onToggle}
       >
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col space-y-1.5">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-primary/90">
+            <h3 className="text-sm font-medium text-primary/90">
               <HighlightText
                 text={serverName}
                 searchQuery={searchQuery || ''}
               />
             </h3>
-            <Badge variant="outline" className="font-normal">
+            <Badge variant="outline" className="font-normal text-xs">
               {server.currentPlayers}/{server.maxPlayers}
             </Badge>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="font-normal">
+          <div className="flex flex-wrap gap-1.5">
+            <Badge variant="secondary" className="font-normal text-xs">
               <HighlightText
                 text={serverMode}
                 searchQuery={searchQuery || ''}
               />
             </Badge>
-            <Badge variant="outline" className="font-normal">
+            <Badge variant="outline" className="font-normal text-xs">
               <HighlightText
                 text={serverCountry}
                 searchQuery={searchQuery || ''}
               />
             </Badge>
             {server.bots > 0 && (
-              <Badge variant="outline" className="font-normal">
+              <Badge variant="outline" className="font-normal text-xs">
                 {server.bots} Bots
               </Badge>
             )}
@@ -348,9 +348,9 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
             const servers = serversByMap.serversByMap[map.id] || [];
 
             return (
-              <div key={map.id} className="mb-6 last:mb-0">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="text-lg font-medium text-primary">
+              <div key={map.id} className="mb-8 last:mb-0">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <span className="text-2xl font-bold text-primary">
                     <HighlightText
                       text={String(map.id || '')}
                       searchQuery={searchQuery || ''}
@@ -358,11 +358,11 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                   </span>
                   <Badge
                     variant={servers.length > 0 ? 'secondary' : 'outline'}
-                    className="font-normal text-xs"
+                    className="font-normal text-sm"
                   >
                     {servers.length} servers
                   </Badge>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-base text-muted-foreground">
                     <HighlightText
                       text={String(map.name || '')}
                       searchQuery={searchQuery || ''}
