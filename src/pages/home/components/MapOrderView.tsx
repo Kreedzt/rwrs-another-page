@@ -84,11 +84,11 @@ const ServerItem: React.FC<ServerItemProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2 ml-4">
-          <a href={openUrl} target="_blank">
-            <Button variant="outline" size="sm" className="hidden md:flex">
+          <Button variant="outline" size="sm" className="hidden md:flex">
+            <a href={openUrl} target="_blank">
               Join
-            </Button>
-          </a>
+            </a>
+          </Button>
           {expanded ? (
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           ) : (
@@ -186,14 +186,6 @@ const ServerItem: React.FC<ServerItemProps> = ({
                 No players online
               </div>
             )}
-          </div>
-
-          <div className="md:hidden">
-            <a href={openUrl} target="_blank">
-              <Button variant="outline" size="sm" className="w-full">
-                Join Server
-              </Button>
-            </a>
           </div>
         </div>
       )}
