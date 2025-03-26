@@ -102,15 +102,19 @@ const ServerItem: React.FC<ServerItemProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">IP:Port</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 px-2 text-xs"
-                  onClick={handleJoin}
-                >
+                <span className="text-sm font-medium">IP</span>
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                   <HighlightText
-                    text={`${server.ipAddress}:${server.port}`}
+                    text={`${server.ipAddress}`}
+                    searchQuery={searchQuery || ''}
+                  />
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Port</span>
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                  <HighlightText
+                    text={`${server.port}`}
                     searchQuery={searchQuery || ''}
                   />
                 </Button>
@@ -185,14 +189,11 @@ const ServerItem: React.FC<ServerItemProps> = ({
           </div>
 
           <div className="md:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={handleJoin}
-            >
-              Join Server
-            </Button>
+            <a href={openUrl} target="_blank">
+              <Button variant="outline" size="sm" className="w-full">
+                Join Server
+              </Button>
+            </a>
           </div>
         </div>
       )}
@@ -344,7 +345,8 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
             Select Quick Filters to View Map Order
           </div>
           <div className="text-sm text-muted-foreground">
-            Choose your preferred map categories in Quick Filters to display the corresponding server list
+            Choose your preferred map categories in Quick Filters to display the
+            corresponding server list
           </div>
         </div>
       ) : allMaps.length === 0 ? (
