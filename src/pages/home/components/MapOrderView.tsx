@@ -285,20 +285,10 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
       }
     });
 
-    // Sort maps by server count (most servers first) and then alphabetically
-    const sortedMaps = [...allMaps].sort((a, b) => {
-      const aCount = result[a.id]?.length || 0;
-      const bCount = result[b.id]?.length || 0;
-      if (bCount !== aCount) {
-        return bCount - aCount;
-      }
-      // If server counts are equal, sort alphabetically by map name
-      return a.name.localeCompare(b.name);
-    });
-
+    // Keep the original map order from allMaps
     return {
       serversByMap: result,
-      sortedMaps,
+      sortedMaps: allMaps,
     };
   }, [filteredServers, allMaps]);
 
