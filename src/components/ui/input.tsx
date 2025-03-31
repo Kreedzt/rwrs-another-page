@@ -11,19 +11,26 @@ const STATIC_STYLES = {
 } as const;
 
 const Input = memo(React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, placeholder, ...props }, ref) => {
     // 使用 useMemo 缓存类名计算结果
     const inputClassName = useMemo(() => 
       cn(STATIC_STYLES.base, className),
       [className]
     );
 
+    // 优化占位符渲染
+    const optimizedProps = {
+      ...props,
+      placeholder: placeholder || undefined, // 如果没有占位符，则设置为 undefined
+      'data-placeholder': placeholder, // 使用 data 属性存储占位符文本
+    };
+
     return (
       <input
         type={type}
         className={inputClassName}
         ref={ref}
-        {...props}
+        {...optimizedProps}
       />
     );
   }

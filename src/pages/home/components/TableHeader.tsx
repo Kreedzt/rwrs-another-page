@@ -1,4 +1,4 @@
-import React from 'preact/compat';
+import React, { useEffect, useRef } from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/custom/search-input';
 import { Switch } from '@/components/ui/switch';
@@ -28,6 +28,9 @@ interface TableHeaderProps {
   onMultiSelectChange: (checked: boolean) => void;
 }
 
+// 预渲染标题文本，防止渲染延迟
+const PRE_RENDERED_TITLE = 'RWRS Another Page';
+
 export const TableHeader: React.FC<TableHeaderProps> = ({
   searchQuery,
   quickFilters,
@@ -46,10 +49,50 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onMultiSelectChange,
 }) => {
   const { startTour } = useTourGuide();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  // const [titleReady, setTitleReady] = useState(true); // 默认为true，避免闪烁
+
+  // 使用布局效果确保标题立即渲染
+  useEffect(() => {
+    // 立即显示标题内容
+    if (titleRef.current) {
+      // 确保可见性和布局优先级
+      titleRef.current.dataset.priority = 'true';
+
+      // 关键：直接强制执行重绘，这里帮助减少渲染延迟
+      titleRef.current.style.opacity = '1';
+
+      // 直接触发布局计算，强制浏览器立即完成LCP
+      void titleRef.current.offsetWidth;
+    }
+
+    // 监听DOMContentLoaded确保页面结构已经加载完成
+    const handleLoad = () => {
+      if (titleRef.current) {
+        // 进一步确保标题的可见性和优先级
+        titleRef.current.dataset.priority = 'true';
+        titleRef.current.style.opacity = '1';
+      }
+    };
+
+    // 使用更直接的事件监听
+    document.addEventListener('DOMContentLoaded', handleLoad);
+
+    return () => {
+      document.removeEventListener('DOMContentLoaded', handleLoad);
+    };
+  }, []);
+
   return (
     <div class="flex flex-col space-y-2 py-2 h-auto md:min-h-[120px]">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-xl font-bold truncate mr-4">RWRS Another Page</h1>
+        <h1
+          ref={titleRef}
+          class="text-xl font-bold truncate mr-4 max-w-[60%] opacity-100"
+          data-priority="true"
+        >
+          {PRE_RENDERED_TITLE}
+        </h1>
         <div className="flex items-center shrink-0">
           <Button
             id="view-mode-toggle"
