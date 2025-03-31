@@ -86,6 +86,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           id="search-input"
           rootClassName="flex-1"
           type="text"
+          aria-label="Search servers, maps, players, mode, country, etc..."
           value={searchQuery}
           onInput={onSearch}
           placeholder="Search servers, maps, players, mode, country, etc..."

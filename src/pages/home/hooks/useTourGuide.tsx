@@ -1,5 +1,6 @@
-import { useCallback, useEffect } from 'preact/hooks';
+import { useCallback, useEffect, useRef } from 'preact/hooks';
 import { driver, DriveStep } from 'driver.js';
+import type { Driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
 // App version - update this when you want to show the guide again
@@ -8,6 +9,7 @@ const GUIDE_VERSION_KEY = 'app_guide_version';
 const PC_MIN_WIDTH = 768; // Minimum width to be considered a PC display
 
 export const useTourGuide = () => {
+  const guideRef = useRef<Driver | null>(null);
   // Check if we should show the guide automatically (PC resolution and version changed)
   const shouldShowGuide = useCallback(() => {
     const storedVersion = localStorage.getItem(GUIDE_VERSION_KEY);
@@ -141,22 +143,24 @@ export const useTourGuide = () => {
 
   // Start the appropriate tour based on screen size
   const startTour = useCallback(() => {
-    const isPC = window.innerWidth >= PC_MIN_WIDTH;
-    if (isPC) {
-      return startPCTour();
-    } else {
-      return startMobileTour();
-    }
+    requestAnimationFrame(() => {
+      const isPC = window.innerWidth >= PC_MIN_WIDTH;
+      if (isPC) {
+        guideRef.current = startPCTour();
+      } else {
+        guideRef.current = startMobileTour();
+      }
+    });
   }, [startPCTour, startMobileTour]);
 
   // Auto-start the tour on first visit or when version changes
   useEffect(() => {
     if (!shouldShowGuide()) return;
 
-    const guide = startTour();
+    startTour();
 
     return () => {
-      guide.destroy();
+      guideRef.current?.destroy();
     };
   }, [shouldShowGuide, startTour]);
 

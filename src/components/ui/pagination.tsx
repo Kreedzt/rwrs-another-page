@@ -1,6 +1,6 @@
 import * as React from 'preact/compat';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -41,7 +41,7 @@ type PaginationLinkProps = {
   isActive?: boolean;
   disabled?: boolean;
   size?: 'default' | 'icon' | 'sm' | 'lg' | null;
-} & React.ComponentProps<'a'>;
+} & React.ComponentProps<typeof Button>;
 
 const PaginationLink = ({
   className,
@@ -49,8 +49,9 @@ const PaginationLink = ({
   size = 'icon',
   disabled,
   ...props
-}: PaginationLinkProps & { disabled?: boolean }) => (
-  <a
+}: PaginationLinkProps) => (
+  <Button
+    variant={isActive ? 'outline' : 'ghost'}
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({
@@ -59,7 +60,7 @@ const PaginationLink = ({
       }),
       className,
       'text-inherit cursor-pointer',
-      disabled && 'pointer-events-none opacity-50'
+      disabled && 'pointer-events-none opacity-50',
     )}
     {...props}
   />
