@@ -74,6 +74,7 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
           onCheckedChange={onMultiSelectChange}
           disabled={isLoading}
           aria-label="Toggle multiple selection"
+          name="multiple-select"
         />
         <Label className="text-sm">Multiple Select</Label>
       </div>

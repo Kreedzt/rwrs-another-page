@@ -53,12 +53,12 @@ const ServerItem: React.FC<ServerItemProps> = ({
       >
         <div className="flex flex-col space-y-1.5">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium text-primary/90">
+            <h2 className="text-sm font-medium text-primary/90">
               <HighlightText
                 text={serverName}
                 searchQuery={searchQuery || ''}
               />
-            </h3>
+            </h2>
             <Badge variant="outline" className="font-normal text-xs">
               {server.currentPlayers}/{server.maxPlayers}
             </Badge>

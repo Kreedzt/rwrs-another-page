@@ -20,9 +20,9 @@ export const ServerItem: React.FC<ServerItemProps> = ({
         onClick={onToggle}
       >
         <div className="flex flex-col">
-          <h3 className="font-medium">
+          <h2 className="font-medium">
             <HighlightText text={server.name} searchQuery={searchQuery} />
-          </h3>
+          </h2>
           <div className="flex gap-2 mt-1">
             <Badge variant="secondary">
               <HighlightText text={server.mode} searchQuery={searchQuery} />
