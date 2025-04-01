@@ -3,6 +3,7 @@ import type { MobileDataListProps } from '../types';
 import { ServerItem } from './ServerItem';
 import { TableStats } from './TableStats';
 import { filters } from './QuickFilterButtons';
+import { Button } from '@/components/ui/button';
 
 export const MobileDataList: React.FC<MobileDataListProps> = ({
   data,
@@ -10,6 +11,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
   searchQuery,
 }) => {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+  const [visibleItems, setVisibleItems] = useState(10);
 
   const filterValues = useMemo(() => {
     return {
@@ -73,6 +75,10 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
     }));
   }, []);
 
+  const loadMore = useCallback(() => {
+    setVisibleItems(prev => prev + 10);
+  }, []);
+
   const { totalPlayerCount, filteredPlayerCount } = useMemo(
     () => ({
       totalPlayerCount: data.reduce(
@@ -89,21 +95,26 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-32 md:hidden">
+      <div className="flex justify-center items-center h-32 md:hidden" aria-live="polite">
         <div className="animate-pulse">Loading...</div>
       </div>
     );
   }
 
+  // Get only the items we want to display
+  const visibleData = filteredData.slice(0, visibleItems);
+  const hasMoreItems = filteredData.length > visibleItems;
+
   return (
-    <div className="flex flex-col space-y-4 p-4 md:hidden">
+    <div className="flex flex-col space-y-4 p-4 md:hidden" role="region" aria-label="Server list">
       <TableStats
         filteredCount={filteredData.length}
         totalCount={data.length}
         filteredPlayerCount={filteredPlayerCount}
         totalPlayerCount={totalPlayerCount}
       />
-      {filteredData.map((server) => {
+      
+      {visibleData.map((server) => {
         const serverId = `${server.ipAddress}:${server.port}`;
         const isExpanded = !!expandedRows[serverId];
 
@@ -117,8 +128,19 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
           />
         );
       })}
+      
+      {hasMoreItems && (
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={loadMore}
+        >
+          Load more ({filteredData.length - visibleItems} remaining)
+        </Button>
+      )}
+      
       {filteredData.length === 0 && (
-        <div className="text-center text-muted-foreground py-8">
+        <div className="text-center text-muted-foreground py-8" aria-live="polite">
           No servers found
         </div>
       )}

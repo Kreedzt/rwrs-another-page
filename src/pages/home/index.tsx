@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'preact/compat';
+import React, { useCallback, useState, useEffect } from 'preact/compat';
 import useSWR from 'swr';
 import { DataTableService } from '@/services/data-table.service';
 import { useToast } from '@/hooks/use-toast';
@@ -57,6 +57,14 @@ const Home: React.FC = () => {
     refreshInterval: autoRefresh ? 10000 : 0,
   });
 
+  // Cleanup unnecessary DOM nodes when component unmounts
+  useEffect(() => {
+    return () => {
+      // Force cleanup of any lingering DOM nodes
+      tableData.length = 0; 
+    };
+  }, []);
+  
   const onSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       handleSearch(e.currentTarget.value, setPagination, DEFAULT_PAGE_SIZE);
@@ -96,7 +104,7 @@ const Home: React.FC = () => {
   }, [searchQuery, quickFilters, updateSearchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen">
+    <main className="flex flex-col items-center min-h-screen">
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4">
         <TableHeader
           searchQuery={searchQuery}
@@ -144,7 +152,7 @@ const Home: React.FC = () => {
           />
         )}
       </div>
-    </div>
+    </main>
   );
 };
 
