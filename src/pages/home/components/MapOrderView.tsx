@@ -93,9 +93,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
             </a>
           </Button>
           {expanded ? (
-            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           ) : (
-            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
           )}
         </div>
       </div>
@@ -408,9 +408,9 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                     />
                   </span>
                   {isMapExpanded ? (
-                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                   )}
                 </div>
 

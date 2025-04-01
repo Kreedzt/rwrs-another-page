@@ -22,6 +22,7 @@ export const ServerItem: React.FC<ServerItemProps> = ({
         aria-expanded={expanded}
         role="button"
         tabIndex={0}
+        aria-label={`Server ${server.name}, ${expanded ? 'click to collapse' : 'click to expand'}`}
       >
         <div>
           <h2 className="font-medium">
@@ -52,13 +53,12 @@ export const ServerItem: React.FC<ServerItemProps> = ({
               'h-4 w-4 shrink-0 transition-transform duration-200',
               expanded ? 'transform rotate-180' : '',
             )}
-            aria-hidden="true"
           />
         </div>
       </header>
       
       {expanded && (
-        <div className="mt-4 space-y-2" aria-label="Server details">
+        <div className="mt-4 space-y-2">
           <dl className="grid grid-cols-2 gap-2">
             <div>
               <dt className="text-sm text-muted-foreground inline">IP: </dt>
