@@ -135,7 +135,7 @@ export const columns = [
         </div>
       );
     },
-    header: 'Player List',
+    header: 'Players',
   }),
   columnHelper.accessor('comment', {
     id: 'comment',

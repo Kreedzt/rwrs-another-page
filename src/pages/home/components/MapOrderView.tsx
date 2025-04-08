@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'preact/compat';
+import React, { useMemo, useState, useCallback } from 'preact/compat';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +50,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
       <div
         className="flex justify-between items-start cursor-pointer"
         onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
       >
         <div className="flex flex-col space-y-1.5">
           <div className="flex items-center gap-2">
@@ -85,7 +88,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
         </div>
         <div className="flex items-center gap-2 ml-4">
           <Button variant="outline" size="sm" className="hidden md:flex">
-            <a href={openUrl} target="_blank">
+            <a href={openUrl} target="_blank" rel="noopener noreferrer" aria-label={`Join server ${serverName}`}>
               Join
             </a>
           </Button>
@@ -99,94 +102,111 @@ const ServerItem: React.FC<ServerItemProps> = ({
 
       {expanded && (
         <div className="mt-4 space-y-4 pt-4 border-t border-border/50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">IP</span>
-                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                  <HighlightText
-                    text={`${server.ipAddress}`}
-                    searchQuery={searchQuery || ''}
-                  />
-                </Button>
+              <div>
+                <dt className="text-sm font-medium inline">IP:</dt>{' '}
+                <dd className="inline">
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                    <HighlightText
+                      text={`${server.ipAddress}`}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </Button>
+                </dd>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Port</span>
-                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                  <HighlightText
-                    text={`${server.port}`}
-                    searchQuery={searchQuery || ''}
-                  />
-                </Button>
+              <div>
+                <dt className="text-sm font-medium inline">Port:</dt>{' '}
+                <dd className="inline">
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                    <HighlightText
+                      text={`${server.port}`}
+                      searchQuery={searchQuery || ''}
+                    />
+                  </Button>
+                </dd>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Version</span>
-                <span className="text-sm text-muted-foreground">
+              <div>
+                <dt className="text-sm font-medium inline">Version:</dt>{' '}
+                <dd className="inline text-sm text-muted-foreground">
                   <HighlightText
                     text={serverVersion}
                     searchQuery={searchQuery || ''}
                   />
-                </span>
+                </dd>
               </div>
             </div>
             <div className="space-y-2">
               {server.url && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">URL</span>
-                  <a
-                    href={server.url}
-                    target="_blank"
-                    className="text-sm text-blue-500 hover:underline truncate"
-                  >
-                    <HighlightText
-                      text={serverUrl}
-                      searchQuery={searchQuery || ''}
-                    />
-                  </a>
+                <div>
+                  <dt className="text-sm font-medium inline">URL:</dt>{' '}
+                  <dd className="inline">
+                    <a
+                      href={server.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-500 hover:underline truncate"
+                    >
+                      <HighlightText
+                        text={serverUrl}
+                        searchQuery={searchQuery || ''}
+                      />
+                    </a>
+                  </dd>
                 </div>
               )}
               {server.comment && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Comment</span>
-                  <span className="text-sm text-muted-foreground">
+                <div>
+                  <dt className="text-sm font-medium inline">Comment:</dt>{' '}
+                  <dd className="inline text-sm text-muted-foreground">
                     <HighlightText
                       text={serverComment}
                       searchQuery={searchQuery || ''}
                     />
-                  </span>
+                  </dd>
                 </div>
               )}
             </div>
-          </div>
+          </dl>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Players</span>
-              <span className="text-sm text-muted-foreground">
-                {server.playerList.length} online
-              </span>
+          {server.playerList.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">Players</h4>
+                <span className="text-sm text-muted-foreground">
+                  {server.playerList.length} online
+                </span>
+              </div>
+              {server.playerList.length > 0 ? (
+                <ul className="flex flex-wrap gap-1.5">
+                  {server.playerList.slice(0, 10).map((player) => (
+                    <li key={player}>
+                      <Badge
+                        variant="secondary"
+                        className="font-normal text-xs"
+                      >
+                        <HighlightText
+                          text={String(player || '')}
+                          searchQuery={searchQuery || ''}
+                        />
+                      </Badge>
+                    </li>
+                  ))}
+                  {server.playerList.length > 10 && (
+                    <li>
+                      <Badge variant="outline" className="font-normal text-xs">
+                        +{server.playerList.length - 10} more
+                      </Badge>
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  No players online
+                </div>
+              )}
             </div>
-            {server.playerList.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {server.playerList.map((player) => (
-                  <Badge
-                    key={player}
-                    variant="secondary"
-                    className="font-normal text-xs"
-                  >
-                    <HighlightText
-                      text={String(player || '')}
-                      searchQuery={searchQuery || ''}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No players online
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -202,6 +222,9 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
   const [expandedServers, setExpandedServers] = useState<
     Record<string, boolean>
   >({});
+  
+  // State to track which maps are expanded
+  const [expandedMaps, setExpandedMaps] = useState<Record<string, boolean>>({});
 
   // Get maps for all active filters
   const allMaps = useMemo(() => {
@@ -292,12 +315,19 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
     };
   }, [filteredServers, allMaps]);
 
-  const toggleServerExpand = (serverId: string) => {
+  const toggleServerExpand = useCallback((serverId: string) => {
     setExpandedServers((prev) => ({
       ...prev,
       [serverId]: !prev[serverId],
     }));
-  };
+  }, []);
+  
+  const toggleMapExpand = useCallback((mapId: string) => {
+    setExpandedMaps((prev) => ({
+      ...prev,
+      [mapId]: !prev[mapId],
+    }));
+  }, []);
 
   if (isLoading) {
     return (
@@ -315,11 +345,18 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
     })
     .join(', ');
 
+  // Limit visible maps to reduce DOM size
+  const visibleMaps = serversByMap.sortedMaps.filter(map => 
+    serversByMap.serversByMap[map.id]?.length > 0
+  ).slice(0, 10);
+  
+  const hasMoreMaps = serversByMap.sortedMaps.length > 10;
+
   return (
     <div className="flex flex-col w-full overflow-x-auto">
-      <div className="text-lg font-semibold mb-4 px-2 md:px-0">
+      <header className="text-lg font-semibold mb-4 px-2 md:px-0">
         Map Order: {filterNames || 'All Maps'}
-      </div>
+      </header>
 
       {activeFilters.length === 0 ? (
         <div className="text-center p-8 space-y-4">
@@ -337,18 +374,27 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
         </div>
       ) : (
         <div className="space-y-6 px-2 md:px-0">
-          {serversByMap.sortedMaps.map((map: MapItem) => {
+          {visibleMaps.map((map: MapItem) => {
             const servers = serversByMap.serversByMap[map.id] || [];
+            const isMapExpanded = !!expandedMaps[map.id];
+            
+            if (servers.length === 0) return null;
 
             return (
-              <div key={map.id} className="mb-8 last:mb-0">
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <span className="text-2xl font-bold text-primary">
+              <section key={map.id} className="mb-8 last:mb-0">
+                <div 
+                  className="flex flex-wrap items-center gap-2 mb-4 cursor-pointer" 
+                  onClick={() => toggleMapExpand(map.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isMapExpanded}
+                >
+                  <h2 className="text-2xl font-bold text-primary">
                     <HighlightText
                       text={String(map.id || '')}
                       searchQuery={searchQuery || ''}
                     />
-                  </span>
+                  </h2>
                   <Badge
                     variant={servers.length > 0 ? 'secondary' : 'outline'}
                     className="font-normal text-sm"
@@ -361,11 +407,16 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                       searchQuery={searchQuery || ''}
                     />
                   </span>
+                  {isMapExpanded ? (
+                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  )}
                 </div>
 
-                {servers.length > 0 && (
+                {isMapExpanded && servers.length > 0 && (
                   <div className="space-y-2">
-                    {servers.map((server) => (
+                    {servers.slice(0, 5).map((server) => (
                       <ServerItem
                         key={`${server.ipAddress}:${server.port}`}
                         server={server}
@@ -382,11 +433,30 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                         searchQuery={searchQuery}
                       />
                     ))}
+                    {servers.length > 5 && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full mt-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // This is a placeholder - in a real implementation,
+                          // you would load more servers or navigate to a view with all servers
+                        }}
+                      >
+                        Show {servers.length - 5} more servers
+                      </Button>
+                    )}
                   </div>
                 )}
-              </div>
+              </section>
             );
           })}
+          
+          {hasMoreMaps && (
+            <Button variant="outline" className="w-full">
+              Show more maps
+            </Button>
+          )}
         </div>
       )}
     </div>

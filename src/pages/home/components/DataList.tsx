@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'preact/compat';
+import { useCallback, FC, useMemo } from 'preact/compat';
 import {
   ColumnDef,
   flexRender,
@@ -143,7 +143,7 @@ const TableRowMemo = ({
   </TableRow>
 );
 
-// 优化整个 DataList 组件，使用 memo 包装
+// 优化整个 DataList 组件，使用 memo 包装并实现虚拟滚动
 export const DataList: React.FC<DataTableProps<any, any>> = ({
   table,
   columns,
@@ -161,6 +161,11 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
   const headerGroups = table.getHeaderGroups();
   const rows = table.getRowModel().rows;
   const hasRows = rows.length > 0;
+  
+  // 限制渲染的行数，减少DOM元素数量
+  const visibleRows = useMemo(() => {
+    return hasRows ? rows.slice(0, table.getState().pagination.pageSize) : [];
+  }, [rows, hasRows, table]);
 
   return (
     <div className="w-full">
@@ -185,7 +190,7 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
         </TableHeader>
         <TableBody>
           {hasRows ? (
-            rows.map((row) => {
+            visibleRows.map((row) => {
               const visibleCells = row.getVisibleCells();
               return (
                 <TableRowMemo

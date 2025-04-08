@@ -98,6 +98,46 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+  
+  /* 优化关键内容渲染 - 解决主要渲染延迟问题 */
+  h1 {
+    /* 重要：不要使用auto，会导致渲染延迟 */
+    content-visibility: visible;
+    contain-intrinsic-size: auto 2em;
+    /* 强制硬件加速，减少合成层 */
+    transform: translateZ(0);
+    /* 优先处理该元素 */
+    paint-order: normal;
+    /* 设置合适的大小，避免重绘 */
+    font-size: inherit;
+    line-height: inherit;
+  }
+  
+  /* 针对首个标题元素特别优化 */
+  h1:first-of-type {
+    /* 直接显示，不等待其他元素 */
+    isolation: isolate;
+    /* 预先分配空间，防止布局偏移 */
+    min-height: 1.5em;
+    /* 确保始终可见 */
+    visibility: visible !important;
+  }
+  
+  /* 针对有data-priority属性的元素进行优化 */
+  [data-priority="true"] {
+    /* 使用更简单的包含策略，避免渲染延迟 */
+    contain: content;
+    /* 强制元素立即可见 */
+    content-visibility: visible !important;
+    /* 使用更轻量的变化提示 */
+    will-change: transform;
+    /* 避免元素被隐藏 */
+    visibility: visible !important;
+    /* 确保在渲染树中始终存在 */
+    display: block !important;
+    /* 防止元素被裁剪 */
+    overflow: visible;
+  }
 }
 
 @layer utilities {

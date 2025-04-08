@@ -6,7 +6,7 @@ export function App() {
   return (
     <div>
       <Home />
-      <Toaster />
+      <Toaster aria-label="Toaster" />
     </div>
   );
 }
