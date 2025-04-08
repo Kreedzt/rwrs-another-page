@@ -127,7 +127,6 @@ export const ServerItem: React.FC<ServerItemProps> = ({
                   .filter(
                     (player) => typeof player === 'string' && player.length > 0,
                   )
-                  .slice(0, 15) // Limit displayed players to reduce DOM size
                   .map((player, idx) => (
                     <li key={idx}>
                       <Badge>
@@ -138,13 +137,6 @@ export const ServerItem: React.FC<ServerItemProps> = ({
                       </Badge>
                     </li>
                   ))}
-                {server.playerList.length > 15 && (
-                  <li>
-                    <Badge variant="outline">
-                      +{server.playerList.length - 15} more
-                    </Badge>
-                  </li>
-                )}
               </ul>
             </div>
           )}
