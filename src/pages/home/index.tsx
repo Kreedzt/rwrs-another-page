@@ -39,7 +39,6 @@ const Home: React.FC = () => {
   const {
     data: tableData = [],
     isLoading,
-    error,
     mutate,
   } = useSWR('/api/data-table', () => DataTableService.listAll({ timeout: 15000 }), {
     onSuccess: (data) => {

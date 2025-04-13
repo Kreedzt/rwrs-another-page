@@ -37,7 +37,7 @@ export const DataTableService: IDataTableService = {
       const timestampedUrl = `${url}&_t=${Date.now()}`;
       const data = await request<string>(timestampedUrl, requestOptions, 'text');
       return parseServerListFromString(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching server list: ${error.message}`);
       // Rethrow the error to allow proper handling in listAll
       throw error;
@@ -88,7 +88,7 @@ export const DataTableService: IDataTableService = {
               hasMoreData = false;
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           lastError = error;
           console.error(`Error in batch ${batchCount}: ${error.message}`);
           // Stop fetching more data on error
@@ -109,7 +109,7 @@ export const DataTableService: IDataTableService = {
       }
 
       return totalServerList;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error in listAll: ${error.message}`);
       // Return whatever data we managed to collect before the error
       return totalServerList;
