@@ -1,4 +1,5 @@
 import { useCallback, FC, useMemo } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import {
   ColumnDef,
   flexRender,
@@ -134,7 +135,7 @@ const TableRowMemo = ({
   row: any;
   visibleCells: any[];
 }) => (
-  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+  <TableRow data-state={row.getIsSelected() && 'selected'}>
     {visibleCells.map((cell) => (
       <TableCell key={cell.id}>
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -149,26 +150,32 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
   columns,
   isLoading,
 }) => {
-  if (isLoading) {
-    return (
-      <div className="hidden md:flex justify-center items-center h-32">
-        <div className="animate-pulse">Loading...</div>
-      </div>
-    );
-  }
-
+  const intl = useIntl();
   // 预先计算所需数据，避免在渲染中计算
   const headerGroups = table.getHeaderGroups();
   const rows = table.getRowModel().rows;
   const hasRows = rows.length > 0;
-  
+
   // 限制渲染的行数，减少DOM元素数量
   const visibleRows = useMemo(() => {
     return hasRows ? rows.slice(0, table.getState().pagination.pageSize) : [];
   }, [rows, hasRows, table]);
 
+  // Show loading overlay instead of replacing the entire table
+  // This keeps the UI interactive while loading new data
+  const loadingOverlay = isLoading && (
+    <div className="absolute inset-0 bg-background/80 flex justify-center items-center z-10">
+      <div className="flex flex-col items-center gap-2 p-4 rounded-md bg-background shadow-md">
+        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+        <div>{intl.formatMessage({ id: "app.loading", defaultMessage: "Loading server data..." })}</div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {loadingOverlay}
+
       <Table>
         <TableHeader>
           {headerGroups.map((headerGroup) => (
@@ -203,7 +210,10 @@ export const DataList: React.FC<DataTableProps<any, any>> = ({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                {isLoading ?
+                  intl.formatMessage({ id: "app.loading", defaultMessage: "Loading server data..." }) :
+                  intl.formatMessage({ id: "app.mobile.noServers", defaultMessage: "No results." })
+                }
               </TableCell>
             </TableRow>
           )}

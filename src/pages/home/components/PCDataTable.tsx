@@ -1,4 +1,5 @@
 import React, { useMemo } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -8,7 +9,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { IDisplayServerItem } from '@/models/data-table.model';
-import { columns } from './Columns';
+import { getColumns } from './Columns';
 import { DataList } from './DataList';
 import { TableStats } from './TableStats';
 import { useTableFilter } from '../hooks/useTableFilter';
@@ -38,6 +39,9 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
   columnVisibility,
   setColumnVisibility,
 }) => {
+  const intl = useIntl();
+  // 确保在语言变化时重新生成列定义
+  const columns = useMemo(() => getColumns(intl), [intl]);
   const { onFuzzyFilter } = useTableFilter();
 
   const filteredData = useMemo(() => {
@@ -76,6 +80,7 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
     }),
     [
       data,
+      columns, // 添加 columns 作为依赖项，确保语言变化时表格配置更新
       pagination,
       columnVisibility,
       searchQuery.searchQuery,

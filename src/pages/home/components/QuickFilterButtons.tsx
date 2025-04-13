@@ -1,4 +1,5 @@
 import React from 'preact/compat';
+import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Switch } from '@/components/ui/switch';
@@ -18,28 +19,32 @@ const HELDDIVERS_REGEX = /^\[地狱潜兵]/;
 export const filters = [
   {
     id: 'invasion',
-    label: 'Offical Invasion',
+    labelId: 'app.filter.officialInvasion',
+    defaultLabel: 'Official Invasion',
     filter: (data: IDisplayServerItem) => {
       return data.realm === 'official_invasion';
     },
   },
   {
     id: 'ww2_invasion',
-    label: 'Offical WW2 Invasion',
+    labelId: 'app.filter.officialWW2Invasion',
+    defaultLabel: 'Official WW2 Invasion',
     filter: (data: IDisplayServerItem) => {
       return data.realm === 'official_pacific';
     },
   },
   {
     id: 'dominance',
-    label: 'Offical Dominance',
+    labelId: 'app.filter.officialDominance',
+    defaultLabel: 'Official Dominance',
     filter: (data: IDisplayServerItem) => {
       return data.realm === 'official_dominance';
     },
   },
   {
     id: 'castling',
-    label: 'Offical Mod Castling',
+    labelId: 'app.filter.officialModCastling',
+    defaultLabel: 'Official Mod Castling',
     filter: (data: IDisplayServerItem) => {
       return (
         data.mode.toLowerCase().includes('castling') &&
@@ -49,7 +54,8 @@ export const filters = [
   },
   {
     id: 'helldivers',
-    label: 'Offical Mod HellDivers',
+    labelId: 'app.filter.officialModHellDivers',
+    defaultLabel: 'Official Mod HellDivers',
     filter: (data: IDisplayServerItem) => {
       return (
         data.mode.toLowerCase().includes('hd') &&
@@ -76,7 +82,9 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
           aria-label="Toggle multiple selection"
           name="multiple-select"
         />
-        <Label className="text-sm">Multiple Select</Label>
+        <Label className="text-sm">
+          <FormattedMessage id="app.switch.multipleSelect" defaultMessage="Multiple Select" />
+        </Label>
       </div>
       <div className="flex gap-2 flex-wrap" id="quick-filter-buttons">
         {filters.map((filter) => (
@@ -92,7 +100,7 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
             disabled={isLoading}
             onClick={() => onQuickFilter(filter.id)}
           >
-            {filter.label}
+            <FormattedMessage id={filter.labelId} defaultMessage={filter.defaultLabel} />
           </Button>
         ))}
       </div>

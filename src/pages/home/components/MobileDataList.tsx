@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import type { MobileDataListProps } from '../types';
 import { ServerItem } from './ServerItem';
 import { TableStats } from './TableStats';
@@ -10,6 +11,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
   isLoading,
   searchQuery,
 }) => {
+  const intl = useIntl();
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
   const [visibleItems, setVisibleItems] = useState(10);
 
@@ -93,27 +95,32 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
     [data, filteredData],
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-32 md:hidden" aria-live="polite">
-        <div className="animate-pulse">Loading...</div>
+  // Instead of replacing the entire component when loading,
+  // we'll show a loading indicator while keeping the UI interactive
+  const loadingIndicator = isLoading && (
+    <div className="fixed inset-0 bg-background/70 flex justify-center items-center z-50 md:hidden" aria-live="polite">
+      <div className="bg-background p-4 rounded-lg shadow-lg flex flex-col items-center gap-2">
+        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+        <div>{intl.formatMessage({ id: "app.loading", defaultMessage: "Loading server data..." })}</div>
       </div>
-    );
-  }
+    </div>
+  );
 
   // Get only the items we want to display
   const visibleData = filteredData.slice(0, visibleItems);
   const hasMoreItems = filteredData.length > visibleItems;
 
   return (
-    <div className="flex flex-col space-y-4 p-4 md:hidden" role="region" aria-label="Server list">
+    <div className="relative flex flex-col space-y-4 p-4 md:hidden" role="region" aria-label="Server list">
+      {loadingIndicator}
+
       <TableStats
         filteredCount={filteredData.length}
         totalCount={data.length}
         filteredPlayerCount={filteredPlayerCount}
         totalPlayerCount={totalPlayerCount}
       />
-      
+
       {visibleData.map((server) => {
         const serverId = `${server.ipAddress}:${server.port}`;
         const isExpanded = !!expandedRows[serverId];
@@ -128,20 +135,27 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
           />
         );
       })}
-      
+
       {hasMoreItems && (
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full"
           onClick={loadMore}
+          disabled={isLoading}
         >
-          Load more ({filteredData.length - visibleItems} remaining)
+          {intl.formatMessage(
+            { id: "app.mobile.loadMore", defaultMessage: "Load more ({remaining} remaining)" },
+            { remaining: filteredData.length - visibleItems }
+          )}
         </Button>
       )}
-      
+
       {filteredData.length === 0 && (
-        <div className="text-center text-muted-foreground py-8" aria-live="polite">
-          No servers found
+        <div className="text-center text-muted-foreground py-8 border rounded-md p-4" aria-live="polite">
+          {isLoading ?
+            intl.formatMessage({ id: "app.loading", defaultMessage: "Loading server data..." }) :
+            intl.formatMessage({ id: "app.mobile.noServers", defaultMessage: "No servers found" })
+          }
         </div>
       )}
     </div>

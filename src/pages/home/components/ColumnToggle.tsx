@@ -1,4 +1,5 @@
 import React from 'preact/compat';
+import { useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,35 +9,40 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import { COLUMNS_VISIBILITY_I18N_KEYS } from '../constants';
 
 interface ColumnToggleProps {
-  columnsList: Array<{ id: string; title: string }>;
   columnVisibility: Record<string, boolean>;
   onColumnToggle: (columnId: string, checked: boolean) => void;
 }
 
 export const ColumnToggle: React.FC<ColumnToggleProps> = ({
-  columnsList,
   columnVisibility,
   onColumnToggle,
 }) => {
+  const intl = useIntl();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="ml-2" variant="outline">
-          Columns
+          {intl.formatMessage({ id: "app.columns.button", defaultMessage: "Columns" })}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Toggle visible columns</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {intl.formatMessage({ id: "app.columns.toggle", defaultMessage: "Toggle visible columns" })}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {columnsList.map((c) => (
+        {Object.keys(columnVisibility).map((columnId) => (
           <DropdownMenuCheckboxItem
-            key={c.id}
-            checked={columnVisibility[c.id]}
-            onCheckedChange={(checked: boolean) => onColumnToggle(c.id, checked)}
+            key={columnId}
+            checked={columnVisibility[columnId]}
+            onCheckedChange={(checked: boolean) => onColumnToggle(columnId, checked)}
           >
-            {c.title}
+            {intl.formatMessage({
+              id: COLUMNS_VISIBILITY_I18N_KEYS[columnId as keyof typeof COLUMNS_VISIBILITY_I18N_KEYS],
+              defaultMessage: columnId
+            })}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import useSWR from 'swr';
 import { DataTableService } from '@/services/data-table.service';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +13,7 @@ import { PaginationState } from '@tanstack/react-table';
 import { getInitialViewMode } from './hooks/useTableSearch';
 
 const Home: React.FC = () => {
+  const intl = useIntl();
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'map'>(
     getInitialViewMode(),
@@ -40,31 +42,49 @@ const Home: React.FC = () => {
     data: tableData = [],
     isLoading,
     mutate,
-  } = useSWR('/api/data-table', DataTableService.listAll, {
-    onSuccess: () => {
+  } = useSWR('/api/data-table', () => DataTableService.listAll({ timeout: 15000 }), {
+    onSuccess: (data) => {
       const now = new Date().toLocaleTimeString();
       toast({
-        title: 'Refresh server list success',
-        description: `Data fetched successfully on ${now}`,
+        title: intl.formatMessage({ id: 'app.toast.refreshSuccess.title', defaultMessage: 'Refresh server list success' }),
+        description: intl.formatMessage(
+          { id: 'app.toast.refreshSuccess.description', defaultMessage: 'Data fetched successfully on {time}. Found {count} servers.' },
+          { time: now, count: data.length }
+        ),
       });
     },
     onError: (err) => {
+      console.error('SWR fetch error:', err);
       toast({
-        title: 'Refresh server list failed',
-        description: err.message,
+        title: intl.formatMessage({ id: 'app.toast.refreshFailed.title', defaultMessage: 'Refresh server list failed' }),
+        description: intl.formatMessage(
+          { id: 'app.toast.refreshFailed.description', defaultMessage: 'Request timed out or failed: {error}' },
+          { error: err.message || '' }
+        ),
+        variant: 'destructive',
       });
     },
     refreshInterval: autoRefresh ? 10000 : 0,
+    // Don't block UI during refresh
+    revalidateOnFocus: false,
+    // Reduce deduping interval to allow more frequent manual refreshes
+    dedupingInterval: 2000,
+    // Continue showing stale data while revalidating
+    keepPreviousData: true,
+    // Don't retry on error for automatic refreshes (we'll handle manual retries)
+    shouldRetryOnError: false,
+    // Ensure we can always manually refresh even after errors
+    errorRetryCount: 0,
   });
 
   // Cleanup unnecessary DOM nodes when component unmounts
   useEffect(() => {
     return () => {
       // Force cleanup of any lingering DOM nodes
-      tableData.length = 0; 
+      tableData.length = 0;
     };
   }, []);
-  
+
   const onSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       handleSearch(e.currentTarget.value, setPagination, DEFAULT_PAGE_SIZE);
@@ -77,9 +97,30 @@ const Home: React.FC = () => {
   }, [handleReset]);
 
   const onRefresh = useCallback(() => {
-    mutate();
+    toast({
+      title: intl.formatMessage({ id: 'app.toast.refreshing.title', defaultMessage: 'Refreshing server list' }),
+      description: intl.formatMessage({ id: 'app.toast.refreshing.description', defaultMessage: 'Please wait while we fetch the latest data...' }),
+    });
+
+    // Force a new request by providing a custom fetcher that bypasses SWR cache
+    mutate(
+      // Force refetch by providing a custom fetcher that will always run
+      async () => {
+        // Clear any previous errors
+        console.log('Manually triggering refresh...');
+        // Always fetch fresh data, bypassing any cache or error state
+        return await DataTableService.listAll({ timeout: 15000 });
+      },
+      {
+        // Don't revalidate again after this manual trigger
+        revalidate: false,
+        // Force a refetch even if there was an error
+        throwOnError: false,
+      }
+    );
+
     handleReset(setPagination, DEFAULT_PAGE_SIZE);
-  }, [mutate, handleReset]);
+  }, [mutate, handleReset, toast]);
 
   const onQuickFilter = useCallback(
     (filterId: string) => {

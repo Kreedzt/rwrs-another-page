@@ -1,4 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
+import { IntlShape } from 'react-intl';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,39 +46,40 @@ const SimpleTextCell = ({ value }: { value: string | number }) => {
   return <>{value}</>;
 };
 
-export const columns = [
+// 创建一个函数来生成国际化的列定义
+export const getColumns = (intl: IntlShape) => [
   columnHelper.accessor('name', {
     id: 'name',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue()} />
     ),
-    header: 'Name',
+    header: intl.formatMessage({ id: 'app.column.name', defaultMessage: 'Name' }),
   }),
   columnHelper.accessor('ipAddress', {
     id: 'ipAddress',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue()} />
     ),
-    header: 'IP',
+    header: intl.formatMessage({ id: 'app.column.ip', defaultMessage: 'IP' }),
   }),
   columnHelper.accessor('port', {
     id: 'port',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue().toString()} />
     ),
-    header: 'Port',
+    header: intl.formatMessage({ id: 'app.column.port', defaultMessage: 'Port' }),
   }),
   columnHelper.accessor('bots', {
     id: 'bots',
     cell: ({ getValue }) => <SimpleTextCell value={getValue()} />,
-    header: 'Bots',
+    header: intl.formatMessage({ id: 'app.column.bots', defaultMessage: 'Bots' }),
   }),
   columnHelper.accessor('country', {
     id: 'country',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue()} />
     ),
-    header: 'Country',
+    header: intl.formatMessage({ id: 'app.column.country', defaultMessage: 'Country' }),
   }),
   columnHelper.accessor('mode', {
     id: 'mode',
@@ -86,7 +88,7 @@ export const columns = [
         <TextCellWithHighlight table={table} value={getValue()} />
       </Badge>
     ),
-    header: 'Mode',
+    header: intl.formatMessage({ id: 'app.column.mode', defaultMessage: 'Mode' }),
   }),
   columnHelper.accessor('mapId', {
     id: 'mapId',
@@ -98,12 +100,12 @@ export const columns = [
         </Badge>
       );
     },
-    header: 'Map',
+    header: intl.formatMessage({ id: 'app.column.map', defaultMessage: 'Map' }),
   }),
   columnHelper.accessor((row) => `${row.currentPlayers} / ${row.maxPlayers}`, {
     id: 'playerCount',
     cell: ({ getValue }) => <SimpleTextCell value={getValue()} />,
-    header: 'Capacity',
+    header: intl.formatMessage({ id: 'app.column.capacity', defaultMessage: 'Capacity' }),
   }),
   columnHelper.accessor('playerList', {
     id: 'playerList',
@@ -135,28 +137,28 @@ export const columns = [
         </div>
       );
     },
-    header: 'Players',
+    header: intl.formatMessage({ id: 'app.column.players', defaultMessage: 'Players' }),
   }),
   columnHelper.accessor('comment', {
     id: 'comment',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue() || ''} />
     ),
-    header: 'Comment',
+    header: intl.formatMessage({ id: 'app.column.comment', defaultMessage: 'Comment' }),
   }),
   columnHelper.accessor('dedicated', {
     id: 'dedicated',
     cell: ({ getValue }) => (
       <SimpleTextCell value={getValue() ? 'Yes' : 'No'} />
     ),
-    header: 'Dedicated',
+    header: intl.formatMessage({ id: 'app.column.dedicated', defaultMessage: 'Dedicated' }),
   }),
   columnHelper.accessor('mod', {
     id: 'mod',
     cell: ({ getValue }) => (
       <SimpleTextCell value={getValue() === 1 ? 'Yes' : 'No'} />
     ),
-    header: 'Mod',
+    header: intl.formatMessage({ id: 'app.column.mod', defaultMessage: 'Mod' }),
   }),
   columnHelper.accessor('url', {
     id: 'url',
@@ -168,14 +170,14 @@ export const columns = [
         </a>
       ) : null;
     },
-    header: 'URL',
+    header: intl.formatMessage({ id: 'app.column.url', defaultMessage: 'URL' }),
   }),
   columnHelper.accessor('version', {
     id: 'version',
     cell: ({ table, getValue }) => (
       <TextCellWithHighlight table={table} value={getValue().toString()} />
     ),
-    header: 'Version',
+    header: intl.formatMessage({ id: 'app.column.version', defaultMessage: 'Version' }),
   }),
   columnHelper.display({
     id: 'action',
@@ -185,12 +187,12 @@ export const columns = [
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <a href={openUrl} target="_blank">
-              Join
+              {intl.formatMessage({ id: "app.button.join", defaultMessage: "Join" })}
             </a>
           </Button>
         </div>
       );
     },
-    header: 'Action',
+    header: intl.formatMessage({ id: 'app.column.action', defaultMessage: 'Action' }),
   }),
 ];

@@ -1,4 +1,5 @@
 import React from 'preact/compat';
+import { useIntl } from 'react-intl';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +12,7 @@ export const ServerItem: React.FC<ServerItemProps> = ({
   onToggle,
   searchQuery,
 }) => {
+  const intl = useIntl();
   const lastMapId = server.mapId.split('/').pop();
   const openUrl = `steam://rungameid/270150//server_address=${server.ipAddress} server_port=${server.port}`;
 
@@ -46,7 +48,7 @@ export const ServerItem: React.FC<ServerItemProps> = ({
             className="text-sm text-blue-500 hover:underline hidden md:block"
             aria-label={`Join server ${server.name}`}
           >
-            Join
+            {intl.formatMessage({ id: "app.button.join", defaultMessage: "Join" })}
           </a>
           <ChevronDownIcon
             className={cn(
@@ -56,12 +58,14 @@ export const ServerItem: React.FC<ServerItemProps> = ({
           />
         </div>
       </header>
-      
+
       {expanded && (
         <div className="mt-4 space-y-2">
           <dl className="grid grid-cols-2 gap-2">
             <div>
-              <dt className="text-sm text-muted-foreground inline">IP: </dt>
+              <dt className="text-sm text-muted-foreground inline">
+                {intl.formatMessage({ id: "app.serverItem.ip", defaultMessage: "IP:" })}{' '}
+              </dt>
               <dd className="inline">
                 <HighlightText
                   text={server.ipAddress}
@@ -70,7 +74,9 @@ export const ServerItem: React.FC<ServerItemProps> = ({
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground inline">Port: </dt>
+              <dt className="text-sm text-muted-foreground inline">
+                {intl.formatMessage({ id: "app.serverItem.port", defaultMessage: "Port:" })}{' '}
+              </dt>
               <dd className="inline">
                 <HighlightText
                   text={server.port.toString()}
@@ -79,27 +85,35 @@ export const ServerItem: React.FC<ServerItemProps> = ({
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground inline">Country: </dt>
+              <dt className="text-sm text-muted-foreground inline">
+                {intl.formatMessage({ id: "app.serverItem.country", defaultMessage: "Country:" })}{' '}
+              </dt>
               <dd className="inline">
                 <HighlightText text={server.country} searchQuery={searchQuery} />
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground inline">Bots: </dt>
+              <dt className="text-sm text-muted-foreground inline">
+                {intl.formatMessage({ id: "app.serverItem.bots", defaultMessage: "Bots:" })}{' '}
+              </dt>
               <dd className="inline">{server.bots}</dd>
             </div>
           </dl>
-          
+
           {server.comment && (
             <div>
-              <span className="text-sm text-muted-foreground">Comment: </span>
+              <span className="text-sm text-muted-foreground">
+                {intl.formatMessage({ id: "app.serverItem.comment", defaultMessage: "Comment:" })}{' '}
+              </span>
               <HighlightText text={server.comment} searchQuery={searchQuery} />
             </div>
           )}
-          
+
           {server.url && (
             <div>
-              <span className="text-sm text-muted-foreground">URL: </span>
+              <span className="text-sm text-muted-foreground">
+                {intl.formatMessage({ id: "app.serverItem.url", defaultMessage: "URL:" })}{' '}
+              </span>
               <a
                 href={server.url}
                 target="_blank"
@@ -110,18 +124,22 @@ export const ServerItem: React.FC<ServerItemProps> = ({
               </a>
             </div>
           )}
-          
+
           <div>
-            <span className="text-sm text-muted-foreground">Version: </span>
+            <span className="text-sm text-muted-foreground">
+              {intl.formatMessage({ id: "app.serverItem.version", defaultMessage: "Version:" })}{' '}
+            </span>
             <HighlightText
               text={server.version.toString()}
               searchQuery={searchQuery}
             />
           </div>
-          
+
           {server.playerList.length > 0 && (
             <div>
-              <h3 className="text-sm text-muted-foreground">Players:</h3>
+              <h3 className="text-sm text-muted-foreground">
+                {intl.formatMessage({ id: "app.serverItem.players", defaultMessage: "Players:" })}
+              </h3>
               <ul className="flex flex-wrap gap-1 mt-1">
                 {server.playerList
                   .filter(
