@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'preact/compat';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { useIntl } from 'react-intl';
 import type { MobileDataListProps } from '../types';
 import { ServerItem } from './ServerItem';
 import { TableStats } from './TableStats';
@@ -101,7 +101,7 @@ export const MobileDataList: React.FC<MobileDataListProps> = ({
     <div className="fixed inset-0 bg-background/70 flex justify-center items-center z-50 md:hidden" aria-live="polite">
       <div className="bg-background p-4 rounded-lg shadow-lg flex flex-col items-center gap-2">
         <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-        <div><FormattedMessage id="app.loading" defaultMessage="Loading server data..." /></div>
+        <div>{intl.formatMessage({ id: "app.loading", defaultMessage: "Loading server data..." })}</div>
       </div>
     </div>
   );

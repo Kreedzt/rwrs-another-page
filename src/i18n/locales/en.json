@@ -55,5 +55,12 @@
   "app.serverItem.comment": "Comment:",
   "app.serverItem.url": "URL:",
   "app.serverItem.version": "Version:",
-  "app.serverItem.players": "Players:"
+  "app.serverItem.players": "Players:",
+
+  "app.toast.refreshing.title": "Refreshing server list",
+  "app.toast.refreshing.description": "Please wait while we fetch the latest data...",
+  "app.toast.refreshSuccess.title": "Refresh server list success",
+  "app.toast.refreshSuccess.description": "Data fetched successfully on {time}. Found {count} servers.",
+  "app.toast.refreshFailed.title": "Refresh server list failed",
+  "app.toast.refreshFailed.description": "Request timed out or failed: {error}"
 }

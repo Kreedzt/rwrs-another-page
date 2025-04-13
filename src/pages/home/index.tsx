@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import useSWR from 'swr';
 import { DataTableService } from '@/services/data-table.service';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +13,7 @@ import { PaginationState } from '@tanstack/react-table';
 import { getInitialViewMode } from './hooks/useTableSearch';
 
 const Home: React.FC = () => {
+  const intl = useIntl();
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'map'>(
     getInitialViewMode(),
@@ -44,15 +46,21 @@ const Home: React.FC = () => {
     onSuccess: (data) => {
       const now = new Date().toLocaleTimeString();
       toast({
-        title: 'Refresh server list success',
-        description: `Data fetched successfully on ${now}. Found ${data.length} servers.`,
+        title: intl.formatMessage({ id: 'app.toast.refreshSuccess.title', defaultMessage: 'Refresh server list success' }),
+        description: intl.formatMessage(
+          { id: 'app.toast.refreshSuccess.description', defaultMessage: 'Data fetched successfully on {time}. Found {count} servers.' },
+          { time: now, count: data.length }
+        ),
       });
     },
     onError: (err) => {
       console.error('SWR fetch error:', err);
       toast({
-        title: 'Refresh server list failed',
-        description: err.message || 'Request timed out or failed',
+        title: intl.formatMessage({ id: 'app.toast.refreshFailed.title', defaultMessage: 'Refresh server list failed' }),
+        description: intl.formatMessage(
+          { id: 'app.toast.refreshFailed.description', defaultMessage: 'Request timed out or failed: {error}' },
+          { error: err.message || '' }
+        ),
         variant: 'destructive',
       });
     },
@@ -90,8 +98,8 @@ const Home: React.FC = () => {
 
   const onRefresh = useCallback(() => {
     toast({
-      title: 'Refreshing server list',
-      description: 'Please wait while we fetch the latest data...',
+      title: intl.formatMessage({ id: 'app.toast.refreshing.title', defaultMessage: 'Refreshing server list' }),
+      description: intl.formatMessage({ id: 'app.toast.refreshing.description', defaultMessage: 'Please wait while we fetch the latest data...' }),
     });
 
     // Force a new request by providing a custom fetcher that bypasses SWR cache

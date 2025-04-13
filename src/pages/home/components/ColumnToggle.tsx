@@ -1,5 +1,5 @@
 import React from 'preact/compat';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,12 +26,12 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="ml-2" variant="outline">
-          <FormattedMessage id="app.columns.button" defaultMessage="Columns" />
+          {intl.formatMessage({ id: "app.columns.button", defaultMessage: "Columns" })}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
-          <FormattedMessage id="app.columns.toggle" defaultMessage="Toggle visible columns" />
+          {intl.formatMessage({ id: "app.columns.toggle", defaultMessage: "Toggle visible columns" })}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columnsList.map((c) => (

@@ -1,4 +1,15 @@
-import { columns } from './components/Columns';
+import { getColumns } from './components/Columns';
+import { createIntl, createIntlCache } from 'react-intl';
+
+// 创建一个默认的 intl 实例用于初始化列定义
+const cache = createIntlCache();
+const intl = createIntl({
+  locale: 'en',
+  messages: {}
+}, cache);
+
+// 使用默认的 intl 实例获取列定义
+const columns = getColumns(intl);
 
 export const COLUMNS_LIST: Array<{ id: string; title: string }> = columns.map(
   (c) => ({
