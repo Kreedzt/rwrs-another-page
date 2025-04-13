@@ -1,9 +1,19 @@
-import React, { createContext, useState, useContext, useEffect } from 'preact/compat';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+} from 'preact/compat';
 import { IntlProvider } from 'react-intl';
 
 // Import language files
 import enMessages from './locales/en.json';
 import zhMessages from './locales/zh.json';
+import {
+  getInitialLocale,
+  setDocumentLanguage,
+  isValidLocale,
+} from './languageUtils';
 
 // Define available locales
 export const locales = {
@@ -32,30 +42,22 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 // Language provider component
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Try to get the locale from localStorage, default to browser language or 'en'
-  const getBrowserLocale = () => {
-    const browserLang = navigator.language.split('-')[0];
-    return Object.keys(locales).includes(browserLang) ? browserLang : 'en';
-  };
-
-  const getInitialLocale = () => {
-    const savedLocale = localStorage.getItem('app-locale');
-    return savedLocale || getBrowserLocale();
-  };
-
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  // Use the utility function to get the initial locale
   const [locale, setLocale] = useState(getInitialLocale());
 
   // Save locale to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('app-locale', locale);
-    // Update html lang attribute
-    document.documentElement.lang = locale;
+    // Update html lang attribute using the utility function
+    setDocumentLanguage(locale);
   }, [locale]);
 
   // Function to change the locale
   const changeLocale = (newLocale: string) => {
-    if (Object.keys(locales).includes(newLocale)) {
+    if (isValidLocale(newLocale)) {
       setLocale(newLocale);
     }
   };

@@ -1,5 +1,9 @@
-import { render } from 'preact'
-import './index.css'
-import { App } from './app.tsx'
+import { render } from 'preact';
+import './index.css';
+import { App } from './app.tsx';
+import { initializeLanguage } from './i18n/languageUtils';
 
-render(<App />, document.getElementById('app')!)
+// Initialize language before rendering the app
+initializeLanguage();
+
+render(<App />, document.getElementById('app')!);
