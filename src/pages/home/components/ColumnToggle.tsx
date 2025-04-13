@@ -1,4 +1,5 @@
 import React from 'preact/compat';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,15 +21,18 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
   columnVisibility,
   onColumnToggle,
 }) => {
+  const intl = useIntl();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="ml-2" variant="outline">
-          Columns
+          <FormattedMessage id="app.columns.button" defaultMessage="Columns" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Toggle visible columns</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          <FormattedMessage id="app.columns.toggle" defaultMessage="Toggle visible columns" />
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columnsList.map((c) => (
           <DropdownMenuCheckboxItem
@@ -36,7 +40,10 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
             checked={columnVisibility[c.id]}
             onCheckedChange={(checked: boolean) => onColumnToggle(c.id, checked)}
           >
-            {c.title}
+            {intl.formatMessage({
+              id: `app.column.${c.id.toLowerCase()}`,
+              defaultMessage: c.title
+            })}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

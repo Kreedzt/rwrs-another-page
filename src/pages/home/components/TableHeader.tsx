@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'preact/compat';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/custom/search-input';
 import { Switch } from '@/components/ui/switch';
@@ -9,6 +10,7 @@ import { QuickFilterButtons } from './QuickFilterButtons';
 import { RefreshCw, List, MapPin } from 'lucide-react';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useTourGuide } from '../hooks/useTourGuide';
+import { LanguageSwitcher } from '@/components/custom/language-switcher';
 
 interface TableHeaderProps {
   searchQuery: string;
@@ -28,8 +30,7 @@ interface TableHeaderProps {
   onMultiSelectChange: (checked: boolean) => void;
 }
 
-// 预渲染标题文本，防止渲染延迟
-const PRE_RENDERED_TITLE = 'RWRS Another Page';
+// Title is now handled by FormattedMessage
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
   searchQuery,
@@ -49,6 +50,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onMultiSelectChange,
 }) => {
   const { startTour } = useTourGuide();
+  const intl = useIntl();
   const titleRef = useRef<HTMLHeadingElement>(null);
   // const [titleReady, setTitleReady] = useState(true); // 默认为true，避免闪烁
 
@@ -91,7 +93,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           class="text-xl font-bold truncate mr-4 max-w-[60%] opacity-100"
           data-priority="true"
         >
-          {PRE_RENDERED_TITLE}
+          <FormattedMessage id="app.title" defaultMessage="RWRS Another Page" />
         </h1>
         <div className="flex items-center shrink-0">
           <Button
@@ -99,11 +101,10 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             variant="outline"
             size="icon"
             onClick={onViewModeToggle}
-            title={
-              viewMode === 'table'
-                ? 'Switch to Map Order View'
-                : 'Switch to Table View'
-            }
+            title={intl.formatMessage({
+              id: viewMode === 'table' ? 'app.viewMode.table' : 'app.viewMode.map',
+              defaultMessage: viewMode === 'table' ? 'Switch to Map Order View' : 'Switch to Table View'
+            })}
             className="mr-2"
           >
             {viewMode === 'table' ? (
@@ -117,11 +118,12 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             variant="ghost"
             size="icon"
             onClick={startTour}
-            title="Show Help Guide"
-            className="bg-transparent hover:bg-transparent"
+            title={intl.formatMessage({ id: 'app.help.title', defaultMessage: 'Show Help Guide' })}
+            className="bg-transparent hover:bg-transparent mr-2"
           >
             <QuestionMarkCircledIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </Button>
+          <LanguageSwitcher />
         </div>
       </div>
       <div class="w-full flex items-center">
@@ -129,18 +131,18 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           id="search-input"
           rootClassName="flex-1"
           type="text"
-          aria-label="Search servers, maps, players, mode, country, etc..."
+          aria-label={intl.formatMessage({ id: 'app.search.placeholder', defaultMessage: 'Search servers, maps, players, mode, country, etc...' })}
           value={searchQuery}
           onInput={onSearch}
-          placeholder="Search servers, maps, players, mode, country, etc..."
+          placeholder={intl.formatMessage({ id: 'app.search.placeholder', defaultMessage: 'Search servers, maps, players, mode, country, etc...' })}
           disabled={isLoading}
         />
         <div class="items-center hidden md:flex">
           <Button className="ml-2" disabled={isLoading} onClick={onReset}>
-            Reset
+            <FormattedMessage id="app.button.reset" defaultMessage="Reset" />
           </Button>
           <Button disabled={isLoading} className="ml-2" onClick={onRefresh}>
-            Refresh
+            <FormattedMessage id="app.button.refresh" defaultMessage="Refresh" />
           </Button>
           <div className="ml-2 flex items-center">
             <Switch
@@ -148,7 +150,9 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
               onCheckedChange={onAutoRefreshChange}
               disabled={isLoading}
             />
-            <Label className="ml-2">Auto Refresh</Label>
+            <Label className="ml-2">
+              <FormattedMessage id="app.switch.autoRefresh" defaultMessage="Auto Refresh" />
+            </Label>
           </div>
           {viewMode === 'table' && (
             <div className="ml-2" id="column-toggle">
@@ -171,7 +175,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           disabled={isLoading}
         >
           <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh
+          <FormattedMessage id="app.button.refresh" defaultMessage="Refresh" />
         </Button>
       </div>
 

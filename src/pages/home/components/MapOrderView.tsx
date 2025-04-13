@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'preact/compat';
+import { useIntl } from 'react-intl';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
   onToggle,
   searchQuery,
 }) => {
+  const intl = useIntl();
   const openUrl = `steam://rungameid/270150//server_address=${server.ipAddress} server_port=${server.port}`;
 
   // Ensure text values are strings
@@ -81,7 +83,10 @@ const ServerItem: React.FC<ServerItemProps> = ({
             </Badge>
             {server.bots > 0 && (
               <Badge variant="outline" className="font-normal text-xs">
-                {server.bots} Bots
+                {intl.formatMessage(
+                  { id: "app.mapView.bots", defaultMessage: "{count} Bots" },
+                  { count: server.bots }
+                )}
               </Badge>
             )}
           </div>
@@ -89,7 +94,7 @@ const ServerItem: React.FC<ServerItemProps> = ({
         <div className="flex items-center gap-2 ml-4">
           <Button variant="outline" size="sm" className="hidden md:flex">
             <a href={openUrl} target="_blank" rel="noopener noreferrer" aria-label={`Join server ${serverName}`}>
-              Join
+              {intl.formatMessage({ id: "app.button.join", defaultMessage: "Join" })}
             </a>
           </Button>
           {expanded ? (
@@ -105,7 +110,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div>
-                <dt className="text-sm font-medium inline">IP:</dt>{' '}
+                <dt className="text-sm font-medium inline">
+                  {intl.formatMessage({ id: "app.serverItem.ip", defaultMessage: "IP:" })}
+                </dt>{' '}
                 <dd className="inline">
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                     <HighlightText
@@ -116,7 +123,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium inline">Port:</dt>{' '}
+                <dt className="text-sm font-medium inline">
+                  {intl.formatMessage({ id: "app.serverItem.port", defaultMessage: "Port:" })}
+                </dt>{' '}
                 <dd className="inline">
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                     <HighlightText
@@ -127,7 +136,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium inline">Version:</dt>{' '}
+                <dt className="text-sm font-medium inline">
+                  {intl.formatMessage({ id: "app.serverItem.version", defaultMessage: "Version:" })}
+                </dt>{' '}
                 <dd className="inline text-sm text-muted-foreground">
                   <HighlightText
                     text={serverVersion}
@@ -139,7 +150,9 @@ const ServerItem: React.FC<ServerItemProps> = ({
             <div className="space-y-2">
               {server.url && (
                 <div>
-                  <dt className="text-sm font-medium inline">URL:</dt>{' '}
+                  <dt className="text-sm font-medium inline">
+                    {intl.formatMessage({ id: "app.serverItem.url", defaultMessage: "URL:" })}
+                  </dt>{' '}
                   <dd className="inline">
                     <a
                       href={server.url}
@@ -219,10 +232,11 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
   activeFilters,
   searchQuery,
 }) => {
+  const intl = useIntl();
   const [expandedServers, setExpandedServers] = useState<
     Record<string, boolean>
   >({});
-  
+
   // State to track which maps are expanded
   const [expandedMaps, setExpandedMaps] = useState<Record<string, boolean>>({});
 
@@ -321,7 +335,7 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
       [serverId]: !prev[serverId],
     }));
   }, []);
-  
+
   const toggleMapExpand = useCallback((mapId: string) => {
     setExpandedMaps((prev) => ({
       ...prev,
@@ -341,49 +355,63 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
   const filterNames = activeFilters
     .map((filterId) => {
       const filter = filters.find((f) => f.id === filterId);
-      return filter ? filter.label : filterId;
+      if (filter) {
+        return intl.formatMessage({
+          id: filter.labelId,
+          defaultMessage: filter.defaultLabel
+        });
+      }
+      return filterId;
     })
     .join(', ');
 
-  // Limit visible maps to reduce DOM size
-  const visibleMaps = serversByMap.sortedMaps.filter(map => 
-    serversByMap.serversByMap[map.id]?.length > 0
-  ).slice(0, 10);
-  
-  const hasMoreMaps = serversByMap.sortedMaps.length > 10;
 
   return (
     <div className="flex flex-col w-full overflow-x-auto">
       <header className="text-lg font-semibold mb-4 px-2 md:px-0">
-        Map Order: {filterNames || 'All Maps'}
+        {intl.formatMessage(
+          { id: "app.mapView.title", defaultMessage: "Map Order: {filters}" },
+          {
+            filters: filterNames || intl.formatMessage({
+              id: 'app.mapView.allMaps',
+              defaultMessage: 'All Maps'
+            })
+          }
+        )}
       </header>
 
       {activeFilters.length === 0 ? (
         <div className="text-center p-8 space-y-4">
           <div className="text-lg text-muted-foreground">
-            Select Quick Filters to View Map Order
+            {intl.formatMessage({
+              id: "app.mapView.selectFilters",
+              defaultMessage: "Select Quick Filters to View Map Order"
+            })}
           </div>
           <div className="text-sm text-muted-foreground">
-            Choose your preferred map categories in Quick Filters to display the
-            corresponding server list
+            {intl.formatMessage({
+              id: "app.mapView.chooseCategories",
+              defaultMessage: "Choose your preferred map categories in Quick Filters to display the corresponding server list"
+            })}
           </div>
         </div>
       ) : allMaps.length === 0 ? (
         <div className="text-center p-4">
-          No maps found for selected filters.
+          {intl.formatMessage({
+            id: "app.mapView.noMaps",
+            defaultMessage: "No maps found for selected filters."
+          })}
         </div>
       ) : (
         <div className="space-y-6 px-2 md:px-0">
-          {visibleMaps.map((map: MapItem) => {
+          {allMaps.map((map: MapItem) => {
             const servers = serversByMap.serversByMap[map.id] || [];
             const isMapExpanded = !!expandedMaps[map.id];
-            
-            if (servers.length === 0) return null;
 
             return (
               <section key={map.id} className="mb-8 last:mb-0">
-                <div 
-                  className="flex flex-wrap items-center gap-2 mb-4 cursor-pointer" 
+                <div
+                  className="flex flex-wrap items-center gap-2 mb-4 cursor-pointer"
                   onClick={() => toggleMapExpand(map.id)}
                   role="button"
                   tabIndex={0}
@@ -399,7 +427,10 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                     variant={servers.length > 0 ? 'secondary' : 'outline'}
                     className="font-normal text-sm"
                   >
-                    {servers.length} servers
+                    {intl.formatMessage(
+                      { id: "app.mapView.servers", defaultMessage: "{count} servers" },
+                      { count: servers.length }
+                    )}
                   </Badge>
                   <span className="text-base text-muted-foreground">
                     <HighlightText
@@ -416,13 +447,13 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
 
                 {isMapExpanded && servers.length > 0 && (
                   <div className="space-y-2">
-                    {servers.slice(0, 5).map((server) => (
+                    {servers.map((server) => (
                       <ServerItem
                         key={`${server.ipAddress}:${server.port}`}
                         server={server}
                         expanded={
                           !!expandedServers[
-                            `${server.ipAddress}:${server.port}`
+                          `${server.ipAddress}:${server.port}`
                           ]
                         }
                         onToggle={() =>
@@ -433,30 +464,11 @@ export const MapOrderView: React.FC<MapOrderViewProps> = ({
                         searchQuery={searchQuery}
                       />
                     ))}
-                    {servers.length > 5 && (
-                      <Button 
-                        variant="outline" 
-                        className="w-full mt-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // This is a placeholder - in a real implementation,
-                          // you would load more servers or navigate to a view with all servers
-                        }}
-                      >
-                        Show {servers.length - 5} more servers
-                      </Button>
-                    )}
                   </div>
                 )}
               </section>
             );
           })}
-          
-          {hasMoreMaps && (
-            <Button variant="outline" className="w-full">
-              Show more maps
-            </Button>
-          )}
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -9,6 +9,16 @@
     <meta http-equiv='x-dns-prefetch-control' content='on'>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <title>RWRS Another Page</title>
+    <script>
+      // Set initial language based on localStorage or browser language
+      (function() {
+        var savedLocale = localStorage.getItem('app-locale');
+        var browserLang = navigator.language.split('-')[0];
+        var supportedLocales = ['en', 'zh'];
+        var locale = savedLocale || (supportedLocales.includes(browserLang) ? browserLang : 'en');
+        document.documentElement.lang = locale;
+      })();
+    </script>
   </head>
   <body>
     <div id="app" class="w-full mx-auto p-2 lg:max-w-[1280px] text-center"></div>

@@ -1,4 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
+import { FormattedMessage } from 'react-intl';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -185,7 +186,7 @@ export const columns = [
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <a href={openUrl} target="_blank">
-              Join
+              <FormattedMessage id="app.button.join" defaultMessage="Join" />
             </a>
           </Button>
         </div>
