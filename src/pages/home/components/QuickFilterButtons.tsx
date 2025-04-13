@@ -1,5 +1,5 @@
 import React from 'preact/compat';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import { IDisplayServerItem } from '@/models/data-table.model';
 import { Switch } from '@/components/ui/switch';
@@ -72,7 +72,6 @@ export const QuickFilterButtons: React.FC<QuickFilterButtonsProps> = ({
   isMultiSelect,
   onMultiSelectChange,
 }) => {
-  const intl = useIntl();
   return (
     <div className="flex flex-col gap-2 mt-2">
       <div className="flex items-center gap-2">
