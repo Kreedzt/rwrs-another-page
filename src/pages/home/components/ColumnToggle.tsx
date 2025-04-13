@@ -9,15 +9,14 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import { COLUMNS_VISIBILITY_I18N_KEYS } from '../constants';
 
 interface ColumnToggleProps {
-  columnsList: Array<{ id: string; title: string }>;
   columnVisibility: Record<string, boolean>;
   onColumnToggle: (columnId: string, checked: boolean) => void;
 }
 
 export const ColumnToggle: React.FC<ColumnToggleProps> = ({
-  columnsList,
   columnVisibility,
   onColumnToggle,
 }) => {
@@ -34,15 +33,15 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
           {intl.formatMessage({ id: "app.columns.toggle", defaultMessage: "Toggle visible columns" })}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {columnsList.map((c) => (
+        {Object.keys(columnVisibility).map((columnId) => (
           <DropdownMenuCheckboxItem
-            key={c.id}
-            checked={columnVisibility[c.id]}
-            onCheckedChange={(checked: boolean) => onColumnToggle(c.id, checked)}
+            key={columnId}
+            checked={columnVisibility[columnId]}
+            onCheckedChange={(checked: boolean) => onColumnToggle(columnId, checked)}
           >
             {intl.formatMessage({
-              id: `app.column.${c.id.toLowerCase()}`,
-              defaultMessage: c.title
+              id: COLUMNS_VISIBILITY_I18N_KEYS[columnId as keyof typeof COLUMNS_VISIBILITY_I18N_KEYS],
+              defaultMessage: columnId
             })}
           </DropdownMenuCheckboxItem>
         ))}

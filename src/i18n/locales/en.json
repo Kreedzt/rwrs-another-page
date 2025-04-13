@@ -36,6 +36,7 @@
   "app.column.url": "URL",
   "app.column.version": "Version",
   "app.column.action": "Action",
+  "app.column.timestamp": "Timestamp",
 
   "app.mobile.loadMore": "Load more ({remaining} remaining)",
   "app.mobile.noServers": "No servers found",
@@ -62,5 +63,16 @@
   "app.toast.refreshSuccess.title": "Refresh server list success",
   "app.toast.refreshSuccess.description": "Data fetched successfully on {time}. Found {count} servers.",
   "app.toast.refreshFailed.title": "Refresh server list failed",
-  "app.toast.refreshFailed.description": "Request timed out or failed: {error}"
+  "app.toast.refreshFailed.description": "Request timed out or failed: {error}",
+
+  "app.guide.searchInput.title": "Search Input",
+  "app.guide.searchInput.description": "Use this search box to find servers, maps, players, modes, countries, and more. Results update in real-time as you type!",
+  "app.guide.columnVisibility.title": "Column Visibility",
+  "app.guide.columnVisibility.description": "Customize which columns appear in your table. Show only the data that matters to you!",
+  "app.guide.viewModeToggle.title": "View Mode Toggle",
+  "app.guide.viewModeToggle.description": "Switch between list and map view modes to find servers in your preferred way. List view provides detailed information in a table format, while map view offers a geographical perspective.",
+  "app.guide.helpGuide.title": "Help Guide",
+  "app.guide.helpGuide.description": "Click this button anytime to replay the help guide and refresh your memory about the available features.",
+  "app.guide.quickFilters.title": "Quick Filters",
+  "app.guide.quickFilters.description": "Apply filters to quickly find servers matching specific criteria. You can use multiple filters together and combine them with the search box for powerful queries!"
 }

@@ -5,7 +5,7 @@ import { SearchInput } from '@/components/custom/search-input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { ColumnToggle } from './ColumnToggle';
-import { COLUMNS_LIST } from '../constants';
+// COLUMNS_LIST is no longer needed
 import { QuickFilterButtons } from './QuickFilterButtons';
 import { RefreshCw, List, MapPin } from 'lucide-react';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
@@ -157,7 +157,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           {viewMode === 'table' && (
             <div className="ml-2" id="column-toggle">
               <ColumnToggle
-                columnsList={COLUMNS_LIST}
                 columnVisibility={columnVisibility}
                 onColumnToggle={onColumnToggle}
               />

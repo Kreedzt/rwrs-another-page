@@ -36,4 +36,22 @@ export const INITIAL_COLUMNS_VISIBILITY = {
   mod: false,
 };
 
+export const COLUMNS_VISIBILITY_I18N_KEYS: Record<keyof typeof INITIAL_COLUMNS_VISIBILITY, string> = {
+  name: 'app.column.name',
+  ipAddress: 'app.column.ip',
+  port: 'app.column.port',
+  bots: 'app.column.bots',
+  country: 'app.column.country',
+  mode: 'app.column.mode',
+  mapId: 'app.column.map',
+  playerCount: 'app.column.capacity',
+  playerList: 'app.column.players',
+  comment: 'app.column.comment',
+  dedicated: 'app.column.dedicated',
+  url: 'app.column.url',
+  version: 'app.column.version',
+  timestamp: 'app.column.timestamp',
+  mod: 'app.column.mod',
+}
+
 export const DEFAULT_PAGE_SIZE = 20;

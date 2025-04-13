@@ -135,7 +135,7 @@ const TableRowMemo = ({
   row: any;
   visibleCells: any[];
 }) => (
-  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+  <TableRow data-state={row.getIsSelected() && 'selected'}>
     {visibleCells.map((cell) => (
       <TableCell key={cell.id}>
         {flexRender(cell.column.columnDef.cell, cell.getContext())}

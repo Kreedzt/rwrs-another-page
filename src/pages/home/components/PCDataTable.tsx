@@ -40,6 +40,7 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
   setColumnVisibility,
 }) => {
   const intl = useIntl();
+  // 确保在语言变化时重新生成列定义
   const columns = useMemo(() => getColumns(intl), [intl]);
   const { onFuzzyFilter } = useTableFilter();
 
@@ -79,6 +80,7 @@ export const PCDataTable: React.FC<PCDataTableProps> = ({
     }),
     [
       data,
+      columns, // 添加 columns 作为依赖项，确保语言变化时表格配置更新
       pagination,
       columnVisibility,
       searchQuery.searchQuery,

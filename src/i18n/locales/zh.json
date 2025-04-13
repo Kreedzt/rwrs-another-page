@@ -36,6 +36,7 @@
   "app.column.url": "网址",
   "app.column.version": "版本",
   "app.column.action": "操作",
+  "app.column.timestamp": "时间戳",
 
   "app.mobile.loadMore": "加载更多 (还剩 {remaining} 个)",
   "app.mobile.noServers": "未找到服务器",
@@ -62,5 +63,16 @@
   "app.toast.refreshSuccess.title": "刷新服务器列表成功",
   "app.toast.refreshSuccess.description": "数据获取成功，时间：{time}。找到 {count} 个服务器。",
   "app.toast.refreshFailed.title": "刷新服务器列表失败",
-  "app.toast.refreshFailed.description": "请求超时或失败：{error}"
+  "app.toast.refreshFailed.description": "请求超时或失败：{error}",
+
+  "app.guide.searchInput.title": "搜索输入框",
+  "app.guide.searchInput.description": "使用此搜索框查找服务器、地图、玩家、模式、国家等。输入时结果将实时更新！",
+  "app.guide.columnVisibility.title": "列可见性",
+  "app.guide.columnVisibility.description": "自定义表格中显示的列。只显示对您重要的数据！",
+  "app.guide.viewModeToggle.title": "视图模式切换",
+  "app.guide.viewModeToggle.description": "在列表和地图视图模式之间切换，以您喜欢的方式找到服务器。列表视图以表格形式提供详细信息，而地图视图提供地理视角。",
+  "app.guide.helpGuide.title": "帮助指南",
+  "app.guide.helpGuide.description": "随时点击此按钮可重新播放帮助指南，并刷新您对可用功能的记忆。",
+  "app.guide.quickFilters.title": "快速过滤器",
+  "app.guide.quickFilters.description": "应用过滤器快速找到符合特定条件的服务器。您可以同时使用多个过滤器，并将它们与搜索框结合使用，进行强大的查询！"
 }
