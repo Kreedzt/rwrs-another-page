@@ -2,20 +2,35 @@ const BASE_URL = import.meta.env.VITE_API_URL || '';
 
 type ResponseType = 'json' | 'text';
 
+export interface RequestOptions extends RequestInit {
+  timeout?: number;
+}
+
+// Default timeout increased to 10 seconds to give more time for API response
 export async function request<T>(
   url: string,
-  options: RequestInit = {},
+  options: RequestOptions = {},
   responseType: ResponseType = 'json',
-  timeout: number = 5000,
+  timeout: number = 10000,
 ): Promise<T> {
   const controller = new AbortController();
   const { signal } = controller;
   const fetchOptions = { ...options, signal };
 
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  // Use options.timeout if provided, otherwise use the default timeout
+  const effectiveTimeout = options.timeout !== undefined ? options.timeout : timeout;
+
+  const timeoutId = setTimeout(() => controller.abort(), effectiveTimeout);
 
   try {
     const res = await fetch(BASE_URL + url, fetchOptions);
+
+    if (!res.ok) {
+      // Log the error details for debugging
+      console.error(`HTTP error ${res.status}: ${res.statusText} for ${url}`);
+      throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
+    }
+
     let response: T;
 
     if (responseType === 'json') {
@@ -26,10 +41,18 @@ export async function request<T>(
 
     return response;
   } catch (error: any) {
+    // Enhanced error logging
     if (error.name === 'AbortError') {
-      throw new Error('Request timed out');
+      console.error(`Request to ${url} timed out after ${effectiveTimeout}ms`);
+      throw new Error(`Request timed out after ${effectiveTimeout}ms`);
+    } else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+      // Network errors like CORS, network disconnection
+      console.error(`Network error for ${url}: ${error.message}`);
+      throw new Error(`Network error: ${error.message}`);
+    } else {
+      console.error(`Error fetching ${url}:`, error);
+      throw error;
     }
-    throw error;
   } finally {
     clearTimeout(timeoutId);
   }
