@@ -1,6 +1,6 @@
 # RWRS Another Page
 
-A clean and modern server browser for Running with Rifles (RWR) game, inspired by rwrstats.com.
+A clean and modern server browser for Running with Rifles (RWR) game, inspired by [rwrstats](https://rwrstats.com/).
 
 ## Overview
 
@@ -56,12 +56,49 @@ pnpm build
 
 ### Docker
 
-The easiest way to deploy is using Docker:
+There are two ways to deploy using Docker:
 
-```bash
-docker pull zhaozisong0/rwrs-another-page:latest
-docker run -p 80:80 zhaozisong0/rwrs-another-page:latest
-```
+#### Option 1: Separate Containers with Network
+
+1. Create a Docker network:
+   ```bash
+   docker network create rwrs-network
+   ```
+
+2. Start the rwrs-server container:
+   ```bash
+   docker pull zhaozisong0/rwrs-server:latest
+   docker run -d --name rwrs-server --network rwrs-network -e "HOST=0.0.0.0" -e "PORT=80" zhaozisong0/rwrs-server:latest
+   ```
+
+3. Start the rwrs-another-page container:
+   ```bash
+   docker pull zhaozisong0/rwrs-another-page:latest
+   docker run -d --name rwrs-another-page --network rwrs-network -p 80:80 zhaozisong0/rwrs-another-page:latest
+   ```
+
+4. Configure a reverse proxy (like Nginx) to route:
+   - `/api/*` requests to the rwrs-server container
+   - `/*` requests to the rwrs-another-page container
+
+#### Option 2: Single Container
+
+You can also deploy by copying the frontend build to the rwrs-server's static directory:
+
+1. Build the frontend:
+   ```bash
+   pnpm build
+   ```
+
+2. Copy the contents of the `dist` directory to the `/static` directory of the rwrs-server container:
+   ```bash
+   docker cp ./dist/. rwrs-server:/static/
+   ```
+
+   Or mount the directory when starting the container:
+   ```bash
+   docker run -d -p 80:80 -e "HOST=0.0.0.0" -e "PORT=80" -v $(pwd)/dist:/static zhaozisong0/rwrs-server:latest
+   ```
 
 You can inject custom header scripts using the `HEADER_SCRIPTS` environment variable:
 
@@ -76,9 +113,9 @@ docker run -p 80:80 -e "HEADER_SCRIPTS=<script>console.log('Custom script');</sc
    pnpm build
    ```
 
-2. Deploy the contents of the `dist` directory to your web server.
-
-3. Configure your web server to proxy API requests to the rwrs-server backend.
+2. Either:
+   - Deploy the contents of the `dist` directory to your web server and configure it to proxy API requests to the rwrs-server backend.
+   - Copy the contents of the `dist` directory to the `/static` directory of your rwrs-server installation.
 
 ## License
 
