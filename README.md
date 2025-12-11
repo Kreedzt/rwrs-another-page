@@ -1,6 +1,10 @@
-# RWRS Another Page
+# ⚠️ DEPRECATED
 
-A clean and modern server browser for Running with Rifles (RWR) game, inspired by [rwrstats](https://rwrstats.com/).
+This repository is no longer maintained. Please use the new version instead:
+
+👉 **[RWRS Another Page v2](https://github.com/Kreedzt/rwrs-another-page-v2)**
+
+The new version includes significant improvements, better performance, and active maintenance.
 
 ## Overview
 
